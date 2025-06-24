@@ -1,5 +1,5 @@
-require("dotenv").config(); // Charger les variables d'environnement
-const express = require("express");
+require("dotenv").config()
+const express = require("express")
 const cors = require("cors");
 const axios = require("axios");
 const compression = require("compression"); // Compression des réponses HTTP
