@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post Exposant Bon deal</title>
+</head>
+<body>
+    <form method="post" action="http://localhost:9000/api/v1/exposant/post-bondeal" enctype="multipart/form-data">
+        <input type="text" name="token" placeholder="Token"><br />
+        <input type="file" name="bondealPic" accept=".jpg, .jpeg, .png, .webp"><br />
+        <input type="text" name="title" placeholder="Title"><br />
+        <textarea name="description" placeholder="Description"></textarea><br />
+        <button type="submit">
+            Poster le bon deal
+        </button>
+    </form>
+</body>
+</html>

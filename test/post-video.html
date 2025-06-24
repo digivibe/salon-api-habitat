@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post Exposant Vidéo</title>
+</head>
+<body>
+    <form method="post" action="http://localhost:9000/api/v1/exposant/post-video" enctype="multipart/form-data">
+        <input type="text" name="token" placeholder="Token"><br />
+        <input type="file" name="video" accept=".mp4, .mkv, .avi"><br />
+        <textarea name="description" placeholder="Description"></textarea><br />
+        <button type="submit">
+            Poster la vidéo
+        </button>
+    </form>
+</body>
+</html>
