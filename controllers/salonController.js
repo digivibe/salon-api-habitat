@@ -1,56 +1,47 @@
 const Salon = require('../models/salonModel')
 
-const getActiveSalon = async (req, res) => {
+const getAllSalons = async (req, res) => {
     try {
-        const salonCount = await Salon.countDocuments()
-        
-        if (salonCount === 0) {
-            const defaultSalons = [
+        let salons = await Salon.find()
+        if (salons.length === 0) {
+            salons = await Salon.insertMany([
                 { nom: 'Salon de formation', isActive: true },
                 { nom: 'Salon de l\'habitat', isActive: false }
-            ]
-            
-            await Salon.insertMany(defaultSalons)
-
-            const activeSalon = await Salon.findOne({ isActive: true })
-
-            return res.status(200).json({ activeSalonId: activeSalon._id })
+            ])
         }
+        res.json(salons)
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ message: 'Server error' })
+    }
+}
 
+const getActiveSalon = async (req, res) => {
+    try {
         const salon = await Salon.findOne({ isActive: true })
-        
-        if (!salon) {
-            return res.status(404).json({ message: 'No active salon found.' })
-        }
-        
-        res.status(200).json({ activeSalonId: salon._id })
-
-    } catch (error) {
-        console.error(error)
-        res.status(500).json({ message: 'Server error while fetching active salon.' })
+        if (!salon) return res.status(404).json({ message: 'No active salon found.' })
+        res.json(salon)
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ message: 'Server error' })
     }
 }
 
 const setActiveSalon = async (req, res) => {
-    const { salonId, isActive } = req.body
-
+    const { salonId } = req.body
     try {
         await Salon.updateMany({}, { $set: { isActive: false } })
-
-        const salon = await Salon.findByIdAndUpdate(salonId, { isActive: isActive }, { new: true })
-
-        if (!salon) {
-            return res.status(404).json({ message: 'Salon not found.' })
-        }
-
-        res.status(200).json({ message: `Salon ${isActive ? 'activated' : 'deactivated'}` })
-    } catch (error) {
-        console.error(error)
-        res.status(500).json({ message: 'Server error while updating the salon.' })
+        const updatedSalon = await Salon.findByIdAndUpdate(salonId, { isActive: true }, { new: true })
+        if (!updatedSalon) return res.status(404).json({ message: 'Salon not found.' })
+        res.json({ message: 'Salon activated', salon: updatedSalon })
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ message: 'Server error' })
     }
 }
 
 module.exports = {
+    getAllSalons,
     getActiveSalon,
-    setActiveSalon,
+    setActiveSalon
 }
