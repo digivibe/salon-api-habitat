@@ -38,7 +38,7 @@ const setActiveSalon = async (req, res) => {
         if (!updatedSalon) return res.status(404).json({ message: 'Salon not found.' })
 
         const title = 'Changement de Salon'
-        const body = `Le salon ${updatedSalon.nom} est maintenant actif.`
+        const body = `Le ${updatedSalon.nom} est maintenant actif.`
         const data = {
             action: 'switch_salon',
             deepLink: 'myapp://switch-salon'
