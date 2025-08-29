@@ -8,7 +8,7 @@ const nodemailer = require('nodemailer');
  */
 class ZohoMailUtils {
   constructor() {
-    this.transporter = nodemailer.createTransporter({
+    this.transporter = nodemailer.createTransport({
       host: 'smtp.zoho.com',
       port: 587,
       secure: false, // true pour 465, false pour les autres ports
