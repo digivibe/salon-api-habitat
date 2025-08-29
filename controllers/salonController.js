@@ -7,8 +7,8 @@ const getAllSalons = async (req, res) => {
         let salons = await Salon.find()
         if (salons.length === 0) {
             salons = await Salon.insertMany([
-                { nom: 'Salon de l\'emploi', isActive: true },
-                { nom: 'Salon de l\'habitat', isActive: false },
+                { nom: 'Salon de l\'emploi', isActive: false },
+                { nom: 'Salon de l\'habitat', isActive: true },
                 { nom: 'Marché de Noël', isActive: false }
             ])
         }
