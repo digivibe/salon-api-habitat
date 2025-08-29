@@ -9,12 +9,13 @@ const { visitorIdByToken } = require('../libs/visitorIdByToken')
 const Categorie = require('../models/categorieModel')
 const Exposant = require('../models/exposantModel')
 const Login = require('../models/loginModel')
-const sendEmail = require('../libs/mailSender')
+
+const { sendEmail } = require('../libs/mailSender2');
 
 exports.addMultipleExposants = async (req, res) => {
     try {
         const { exposants } = req.body
-        
+
         if (!Array.isArray(exposants) || exposants.length === 0) {
             return res.status(400).json({ message: 'Veuillez fournir une liste valide d’exposants' })
         }
@@ -28,7 +29,7 @@ exports.addMultipleExposants = async (req, res) => {
 
             let message = ''
 
-            
+
             const trimmedData = {
                 categorie: categorie ? categorie.trim() : '',
                 email: email ? email.trim() : '',
@@ -168,6 +169,8 @@ exports.signup = async (req, res) => {
             weblink: weblink ? weblink.trim() : ''
         };
 
+        // ... (toutes vos validations existantes restent identiques) ...
+        
         if (!trimmedData.categorie) {
             message = "Veuillez choisir la catégorie!";
             throw new Error(message);
@@ -238,6 +241,7 @@ exports.signup = async (req, res) => {
             throw new Error(message);
         }
 
+        // Création du nouvel exposant
         const newExposant = new Exposant({
             categorie: trimmedData.categorie,
             email: trimmedData.email,
@@ -262,14 +266,21 @@ exports.signup = async (req, res) => {
             session: 1
         });
         await newLogin.save();
+
+        // Template email amélioré avec interpolation correcte
         const mailContent = `
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nouveau exposant inscrit</title>
+</head>
 <body style="margin:0;padding:0;background:#f5f7fb;">
   <center style="width:100%;background:#f5f7fb;">
-    <!-- Wrapper -->
     <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse;background:#f5f7fb;">
       <tr>
         <td align="center" style="padding:24px 12px;">
-          <!-- Container -->
           <table role="presentation" cellpadding="0" cellspacing="0" width="600" style="max-width:600px;width:100%;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #e8ecf5;">
             <!-- Header -->
             <tr>
@@ -290,7 +301,7 @@ exports.signup = async (req, res) => {
                   <tr>
                     <td style="padding:0 0 12px 0;">
                       <span style="display:inline-block;padding:6px 10px;border-radius:999px;background:#eef4ff;color:#1e40af;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:12px;">
-                        Catégorie : \${(categorieExist && (categorieExist.name || categorieExist.nom || categorieExist.label)) || trimmedData.categorie}
+                        Catégorie : ${(categorieExist && (categorieExist.name || categorieExist.nom || categorieExist.label)) || trimmedData.categorie}
                       </span>
                       <span style="display:inline-block;padding:6px 10px;border-radius:999px;background:#ecfdf5;color:#065f46;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:12px;margin-left:6px;">
                         Statut : En attente de validation
@@ -305,7 +316,7 @@ exports.signup = async (req, res) => {
             <tr>
               <td style="padding:8px 28px 0 28px;">
                 <h2 style="margin:0 0 8px 0;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:20px;color:#0b1b34;">
-                  Détails de l’exposant
+                  Détails de l'exposant
                 </h2>
               </td>
             </tr>
@@ -319,7 +330,7 @@ exports.signup = async (req, res) => {
                       Nom / Identifiant
                     </td>
                     <td style="padding:12px 14px;border-bottom:1px solid #edf1f7;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#111827;">
-                      \${trimmedData.nom}
+                      ${trimmedData.nom}
                     </td>
                   </tr>
                   <tr>
@@ -327,7 +338,7 @@ exports.signup = async (req, res) => {
                       Email
                     </td>
                     <td style="padding:12px 14px;border-bottom:1px solid #edf1f7;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#111827;word-break:break-all;">
-                      \${trimmedData.email}
+                      ${trimmedData.email}
                     </td>
                   </tr>
                   <tr>
@@ -335,7 +346,7 @@ exports.signup = async (req, res) => {
                       Téléphone
                     </td>
                     <td style="padding:12px 14px;border-bottom:1px solid #edf1f7;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#111827;">
-                      \${trimmedData.phoneNumber || "—"}
+                      ${trimmedData.phoneNumber || "—"}
                     </td>
                   </tr>
                   <tr>
@@ -343,7 +354,7 @@ exports.signup = async (req, res) => {
                       Localisation
                     </td>
                     <td style="padding:12px 14px;border-bottom:1px solid #edf1f7;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#111827;">
-                      \${trimmedData.location}
+                      ${trimmedData.location}
                     </td>
                   </tr>
                   <tr>
@@ -351,7 +362,7 @@ exports.signup = async (req, res) => {
                       Catégorie
                     </td>
                     <td style="padding:12px 14px;border-bottom:1px solid #edf1f7;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#111827;">
-                      \${(categorieExist && (categorieExist.name || categorieExist.nom || categorieExist.label)) || trimmedData.categorie}
+                      ${(categorieExist && (categorieExist.name || categorieExist.nom || categorieExist.label)) || trimmedData.categorie}
                     </td>
                   </tr>
                   <tr>
@@ -359,7 +370,7 @@ exports.signup = async (req, res) => {
                       Bio
                     </td>
                     <td style="padding:12px 14px;border-bottom:1px solid #edf1f7;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#111827;">
-                      \${trimmedData.bio}
+                      ${trimmedData.bio}
                     </td>
                   </tr>
                   <tr>
@@ -367,7 +378,7 @@ exports.signup = async (req, res) => {
                       LinkedIn
                     </td>
                     <td style="padding:12px 14px;border-bottom:1px solid #edf1f7;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#1d4ed8;">
-                      <a href="\${trimmedData.linkedinLink || '#'}" style="color:#1d4ed8;text-decoration:underline;">\${trimmedData.linkedinLink || "—"}</a>
+                      ${trimmedData.linkedinLink ? `<a href="${trimmedData.linkedinLink}" style="color:#1d4ed8;text-decoration:underline;">${trimmedData.linkedinLink}</a>` : "—"}
                     </td>
                   </tr>
                   <tr>
@@ -375,7 +386,7 @@ exports.signup = async (req, res) => {
                       Facebook
                     </td>
                     <td style="padding:12px 14px;border-bottom:1px solid #edf1f7;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#1d4ed8;">
-                      <a href="\${trimmedData.facebookLink || '#'}" style="color:#1d4ed8;text-decoration:underline;">\${trimmedData.facebookLink || "—"}</a>
+                      ${trimmedData.facebookLink ? `<a href="${trimmedData.facebookLink}" style="color:#1d4ed8;text-decoration:underline;">${trimmedData.facebookLink}</a>` : "—"}
                     </td>
                   </tr>
                   <tr>
@@ -383,7 +394,7 @@ exports.signup = async (req, res) => {
                       Instagram
                     </td>
                     <td style="padding:12px 14px;border-bottom:1px solid #edf1f7;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#1d4ed8;">
-                      <a href="\${trimmedData.instaLink || '#'}" style="color:#1d4ed8;text-decoration:underline;">\${trimmedData.instaLink || "—"}</a>
+                      ${trimmedData.instaLink ? `<a href="${trimmedData.instaLink}" style="color:#1d4ed8;text-decoration:underline;">${trimmedData.instaLink}</a>` : "—"}
                     </td>
                   </tr>
                   <tr>
@@ -391,7 +402,7 @@ exports.signup = async (req, res) => {
                       Site Web
                     </td>
                     <td style="padding:12px 14px;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#1d4ed8;">
-                      <a href="\${trimmedData.weblink || '#'}" style="color:#1d4ed8;text-decoration:underline;">\${trimmedData.weblink || "—"}</a>
+                      ${trimmedData.weblink ? `<a href="${trimmedData.weblink}" style="color:#1d4ed8;text-decoration:underline;">${trimmedData.weblink}</a>` : "—"}
                     </td>
                   </tr>
                 </table>
@@ -401,13 +412,13 @@ exports.signup = async (req, res) => {
             <!-- Actions -->
             <tr>
               <td align="center" style="padding:20px 28px 28px 28px;">
-                <a href="\${process.env.ADMIN_URL || 'https://votre-admin.example.com/exposants'}" 
+                <a href="${process.env.ADMIN_URL || 'https://votre-admin.example.com/exposants'}" 
                    style="display:inline-block;padding:12px 18px;background:#008f00;color:#ffffff;text-decoration:none;border-radius:10px;font-family:Arial,Helvetica,sans-serif;font-size:14px;">
-                  Ouvrir l’admin
+                  Ouvrir l'admin
                 </a>
-                <a href="mailto:\${trimmedData.email}" 
+                <a href="mailto:${trimmedData.email}" 
                    style="display:inline-block;padding:12px 18px;background:#0b1b34;color:#ffffff;text-decoration:none;border-radius:10px;font-family:Arial,Helvetica,sans-serif;font-size:14px;margin-left:8px;">
-                  Contacter l’exposant
+                  Contacter l'exposant
                 </a>
               </td>
             </tr>
@@ -417,26 +428,42 @@ exports.signup = async (req, res) => {
               <td style="padding:12px 28px 24px 28px;background:#f8fafc;">
                 <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:18px;color:#64748b;">
                   Cet email vous a été envoyé automatiquement suite à une inscription. ID visiteur: 
-                  <span style="font-weight:bold;color:#0b1b34;">\${typeof visitorId !== 'undefined' ? visitorId : '—'}</span>.
+                  <span style="font-weight:bold;color:#0b1b34;">${visitorId || '—'}</span>.
                 </p>
               </td>
             </tr>
           </table>
-          <!-- /Container -->
         </td>
       </tr>
     </table>
-    <!-- /Wrapper -->
   </center>
 </body>
-`;
+</html>`;
 
-        await sendEmail('digivibe.fr@gmail.com', 'Nouveau exposant inscrit', mailContent)
+        // Envoi de l'email avec Zoho Mail
+        try {
+            await sendEmail('digivibe.fr@gmail.com', 'Nouveau exposant inscrit', mailContent);
+            console.log('Email de notification envoyé avec succès');
+        } catch (emailError) {
+            console.error('Erreur lors de l\'envoi de l\'email:', emailError);
+            // Note: On ne fait pas échouer l'inscription si l'email échoue
+        }
 
         const existingUser = await Exposant.findOne({ email: trimmedData.email });
-        res.status(200).json({ status: 200, message: "DONE", token, exposant_infos: existingUser });
+        res.status(200).json({ 
+            status: 200, 
+            message: "DONE", 
+            token, 
+            exposant_infos: existingUser 
+        });
+        
     } catch (error) {
-        res.status(200).json({ status: 400, message: message || "Erreur lors de l'inscription", error: error.message });
+        console.error('Erreur dans signup:', error);
+        res.status(200).json({ 
+            status: 400, 
+            message: message || "Erreur lors de l'inscription", 
+            error: error.message 
+        });
     }
 };
 
