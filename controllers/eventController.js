@@ -10,7 +10,7 @@ exports.create = async (req, res) => {
     
     let message = "";
     try {
-        const expoStatut = await checkExposantLogin(token);
+        /*const expoStatut = await checkExposantLogin(token);
         if (!expoStatut) {
             message = "Vous n'êtes pas connecté pour effectuer cette action!";
             throw new Error(message);
@@ -20,7 +20,7 @@ exports.create = async (req, res) => {
         if (!isAdmin) {
             message = "Vous n'êtes pas autorisé pour effectuer cette action!";
             throw new Error(message);
-        }
+        } */
 
         const dateOnly = eventDate.split('T')[0]; // Extraire la partie date
         const fullDate = new Date(eventDate); // Convertir en objet Date pour fullEventDate
@@ -72,7 +72,7 @@ exports.delete = async (req, res) => {
     
     let message = "";
     try {
-        // Vérification de l'authentification de l'utilisateur
+        /* Vérification de l'authentification de l'utilisateur
         const expoStatut = await checkExposantLogin(token);
         if (!expoStatut) {
             message = "Vous n'êtes pas connecté pour effectuer cette action!";
@@ -84,7 +84,7 @@ exports.delete = async (req, res) => {
         if (!isAdmin) {
             message = "Vous n'êtes pas autorisé pour effectuer cette action!";
             throw new Error(message);
-        }
+        } */
 
         // Suppression de l'événement par ID
         const deletedEvent = await Event.findByIdAndDelete(id);
