@@ -38,7 +38,7 @@ const exposantSchema = new mongoose.Schema({
         type: String,
         required: true,
         maxlength: 100,
-        default: 'https://salonapp-api-y25d.onrender.com/uploads/exposants_profile_pic/default.png'
+        default: 'https://salon-api-habitat.onrender.com/uploads/exposants_profile_pic/logo.png'
     },
     cover: {
         type: String,
