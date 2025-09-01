@@ -69,7 +69,7 @@ exports.getAllEvents = async (req, res) => {
             },
             {
                 $project: {
-                    _id: 0,
+                    _id: 1,
                     titre: 1,
                     description: 1,
                     fullEventDate: 1,
