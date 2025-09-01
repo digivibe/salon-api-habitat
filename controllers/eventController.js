@@ -67,24 +67,16 @@ exports.create = async (req, res) => {
 };
 
 exports.delete = async (req, res) => {
-    const { token } = req.body;
+    // Correction: Récupérer l'ID depuis les paramètres de l'URL uniquement
     const { id } = req.params;
     
     let message = "";
     try {
-        /* Vérification de l'authentification de l'utilisateur
-        const expoStatut = await checkExposantLogin(token);
-        if (!expoStatut) {
-            message = "Vous n'êtes pas connecté pour effectuer cette action!";
+        // Validation de l'ID
+        if (!id) {
+            message = "ID de l'événement manquant.";
             throw new Error(message);
         }
-
-        // Vérification des droits administrateur
-        const isAdmin = await Exposant.findOne({ _id: expoStatut, isValid: 3 });
-        if (!isAdmin) {
-            message = "Vous n'êtes pas autorisé pour effectuer cette action!";
-            throw new Error(message);
-        } */
 
         // Suppression de l'événement par ID
         const deletedEvent = await Event.findByIdAndDelete(id);
@@ -93,8 +85,17 @@ exports.delete = async (req, res) => {
             throw new Error(message);
         }
 
-        res.status(200).json({ status: 200, message: "Événement supprimé avec succès." });
+        res.status(200).json({ 
+            status: 200, 
+            message: "Événement supprimé avec succès.",
+            deletedEvent: deletedEvent 
+        });
     } catch (error) {
-        res.status(400).json({ status: 400, message: message || "Erreur lors de la suppression", error: error.message });
+        console.error('Erreur lors de la suppression:', error);
+        res.status(400).json({ 
+            status: 400, 
+            message: message || "Erreur lors de la suppression", 
+            error: error.message 
+        });
     }
 };
