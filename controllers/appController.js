@@ -5,7 +5,39 @@ const ExposantVideo = require('../models/exposantVideoModel')
 const ExposantBondeal = require('../models/exposantBondealModel')
 const NotificationToken = require('../models/notificationTokenModel')
 
+
 const sendEmail = require('../libs/mailSender')
+const App = require('../models/appModel')
+
+exports.getAppValue = async (req, res) => {
+    const { key } = req.params
+    try {
+        const appRecord = await App.findOne({ key: key, statut: 1 })
+        
+        if (!appRecord) {
+            return res.status(404).json({ message: 'Key not found or inactive' })
+        }
+        
+        res.json({
+            key: appRecord.key,
+            value: appRecord.value,
+            statut: appRecord.statut
+        })
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ message: 'Server error' })
+    }
+}
+
+exports.getAllAppValues = async (req, res) => {
+    try {
+        const appRecords = await App.find({ statut: 1 })
+        res.json(appRecords)
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ message: 'Server error' })
+    }
+}
 
 exports.version = async (req, res) => {
     res.json({versionCode: parseInt(process.env.VERSION_CODE) || 1})

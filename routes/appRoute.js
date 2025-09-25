@@ -5,6 +5,7 @@ const appController = require('../controllers/appController')
 const router = express.Router()
 
 router.get('/version', appController.version)
+app.get('/key/:key', appController.getAppValue)
 router.post('/add-categorie', appController.createNewCategorie)
 router.get('/all-categories', appController.getAllCategories)
 router.post('/add-event', appController.createNewEvent)
