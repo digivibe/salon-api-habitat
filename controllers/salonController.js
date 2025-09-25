@@ -1,4 +1,5 @@
 const Salon = require('../models/salonModel')
+const App = require('../models/appModel')
 
 const { notifyAllUsers } = require('../services/notificationService')
 
@@ -37,6 +38,28 @@ const setActiveSalon = async (req, res) => {
         const updatedSalon = await Salon.findByIdAndUpdate(salonId, { isActive: true }, { new: true })
         if (!updatedSalon) return res.status(404).json({ message: 'Salon not found.' })
 
+        // Récupérer ou créer l'enregistrement newversionapp
+        let appRecord = await App.findOne({ key: 'newversionapp' })
+        
+        if (!appRecord) {
+            // Créer avec la valeur 1 si n'existe pas
+            appRecord = await App.create({
+                key: 'newversionapp',
+                value: '1',
+                statut: 1
+            })
+        } else {
+            // Incrémenter la valeur existante
+            const currentValue = parseInt(appRecord.value) || 0
+            const newValue = (currentValue + 1).toString()
+            
+            appRecord = await App.findOneAndUpdate(
+                { key: 'newversionapp' },
+                { value: newValue },
+                { new: true }
+            )
+        }
+
         const title = 'Changement de Salon'
         const body = `Le ${updatedSalon.nom} est maintenant actif.`
         const data = {
@@ -53,8 +76,28 @@ const setActiveSalon = async (req, res) => {
     }
 }
 
+const notifyNewAppVersion = async (req, res) => {
+    try {
+        const title = 'Nouvelle mise à  jour disponible'
+        const body = 'Une nouvelle version a été mise en ligne. Téléchargez la dernière version de l\'app sur le Play Store pour profiter des nouveautés.'
+        const data = {
+            action: 'update_app',
+            deepLink: 'https://play.google.com/store/apps/details?id=fr.digivibe.dormans'
+        }
+
+        await notifyAllUsers(title, body, data)
+
+        res.json({ message: 'Notification envoyÃ©e Ã  tous les utilisateurs.' })
+    } catch (err) {
+        console.error('Erreur lors de l\'envoi de la notification :', err)
+        res.status(500).json({ message: 'Server error' })
+    }
+}
+
+
 module.exports = {
     getAllSalons,
     getActiveSalon,
-    setActiveSalon
+    setActiveSalon,
+    notifyNewAppVersion
 }
