@@ -17,7 +17,11 @@ exports.getAppValue = async (req, res) => {
         if (!appRecord) {
             return res.status(404).json({ message: 'Key not found or inactive' })
         }
-        
+        console.log({
+            key: appRecord.key,
+            value: appRecord.value,
+            statut: appRecord.statut
+        })
         res.json({
             key: appRecord.key,
             value: appRecord.value,

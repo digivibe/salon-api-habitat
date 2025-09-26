@@ -67,7 +67,7 @@ const setActiveSalon = async (req, res) => {
             deepLink: 'myapp://switch-salon'
         }
 
-        await notifyAllUsers(title, body, data)
+        // await notifyAllUsers(title, body, data)
 
         res.json({ message: 'Salon activated', salon: updatedSalon })
     } catch (err) {
