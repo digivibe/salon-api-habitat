@@ -1,31 +1,43 @@
+// services/fallbackService.js - SERVICE COMPLET
 const axios = require("axios")
+const Exposant = require('../models/exposantModel')
+const ExposantVideo = require('../models/exposantVideoModel')
 
 class FallbackService {
     constructor() {
-        // URLs des serveurs de fallback (à configurer via les variables d'environnement)
-        this.fallbackServers = [
-            process.env.FALLBACK_SERVER_1 || "http://localhost:3001",
-            process.env.FALLBACK_SERVER_2 || "http://localhost:3002",
-        ]
+        // URLs des 3 serveurs de salon
+        this.servers = {
+            salonA: process.env.SALON_A_URL || "https://salon-emploi-api.onrender.com",
+            salonB: process.env.SALON_B_URL || "https://salon-habitat-api.onrender.com",
+            salonC: process.env.SALON_C_URL || "https://marche-noel-api.onrender.com",
+        }
 
-        // Timeout pour les requêtes de fallback
+        // Salon actuel (celui sur lequel tourne cette instance)
+        this.currentSalon = process.env.CURRENT_SALON || "salonA"
+
+        // Timeout pour les requêtes
         this.timeout = 5000
     }
 
     /**
+     * Retourne la liste des serveurs de fallback (tous sauf le serveur actuel)
+     */
+    getFallbackServers() {
+        return Object.entries(this.servers)
+            .filter(([salonKey]) => salonKey !== this.currentSalon)
+            .map(([_, url]) => url)
+    }
+
+    /**
      * Effectue une requête vers les serveurs de fallback
-     * @param {string} endpoint - L'endpoint à appeler
-     * @param {string} method - La méthode HTTP (GET, POST, PUT, DELETE)
-     * @param {object} data - Les données à envoyer (pour POST/PUT)
-     * @param {object} params - Les paramètres de requête
-     * @returns {Promise} - La réponse du premier serveur qui répond avec succès
      */
     async makeRequest(endpoint, method = "GET", data = null, params = {}) {
+        const fallbackServers = this.getFallbackServers()
         const errors = []
 
-        for (const serverUrl of this.fallbackServers) {
+        for (const serverUrl of fallbackServers) {
             try {
-                console.log(`[v0] Tentative de fallback vers ${serverUrl}${endpoint}`)
+                console.log(`[Fallback] Tentative vers ${serverUrl}${endpoint}`)
 
                 const config = {
                     method: method.toLowerCase(),
@@ -41,11 +53,11 @@ class FallbackService {
                 const response = await axios(config)
 
                 if (response.status >= 200 && response.status < 300) {
-                    console.log(`[v0] Fallback réussi vers ${serverUrl}`)
+                    console.log(`[Fallback] ✓ Succès depuis ${serverUrl}`)
                     return response.data
                 }
             } catch (error) {
-                console.log(`[v0] Échec du fallback vers ${serverUrl}: ${error.message}`)
+                console.log(`[Fallback] ✗ Échec depuis ${serverUrl}: ${error.message}`)
                 errors.push({
                     server: serverUrl,
                     error: error.message,
@@ -53,79 +65,44 @@ class FallbackService {
             }
         }
 
-        // Si tous les serveurs de fallback échouent
         throw new Error(`Tous les serveurs de fallback ont échoué: ${JSON.stringify(errors)}`)
     }
 
     /**
-     * Recherche des données d'exposant par ID dans les serveurs de fallback
+     * Vérifie si un exposant existe localement
      */
-    async findExposantById(exposantId) {
-        return this.makeRequest(`/api/exposants/${exposantId}`, "GET")
+    async checkExposantExistsLocally(exposantId) {
+        try {
+            const exposant = await Exposant.findById(exposantId)
+            return !!exposant
+        } catch (error) {
+            return false
+        }
     }
 
     /**
-     * Recherche des données de vidéo par ID dans les serveurs de fallback
+     * Vérifie si une vidéo existe localement
      */
-    async findVideoById(videoId) {
-        return this.makeRequest(`/api/videos/${videoId}`, "GET")
+    async checkVideoExistsLocally(videoId) {
+        try {
+            const video = await ExposantVideo.findById(videoId)
+            return !!video
+        } catch (error) {
+            return false
+        }
     }
 
     /**
-     * Recherche des likes par exposant ID dans les serveurs de fallback
-     */
-    async findLikesByExposantId(exposantId) {
-        return this.makeRequest(`/api/likes/exposant/${exposantId}`, "GET")
-    }
-
-    /**
-     * Recherche des likes par video ID dans les serveurs de fallback
-     */
-    async findLikesByVideoId(videoId) {
-        return this.makeRequest(`/api/likes/video/${videoId}`, "GET")
-    }
-
-    /**
-     * Recherche des commentaires par exposant ID dans les serveurs de fallback
-     */
-    async findCommentsByExposantId(exposantId) {
-        return this.makeRequest(`/api/comments/exposant/${exposantId}`, "GET")
-    }
-
-    /**
-     * Recherche des commentaires par video ID dans les serveurs de fallback
-     */
-    async findCommentsByVideoId(videoId) {
-        return this.makeRequest(`/api/comments/video/${videoId}`, "GET")
-    }
-
-    /**
-     * Crée un like dans les serveurs de fallback
-     */
-    async createLike(likeData) {
-        return this.makeRequest("/api/likes", "POST", likeData)
-    }
-
-    /**
-     * Toggle un like dans les serveurs de fallback
-     */
-    async toggleLike(toggleData) {
-        return this.makeRequest("/api/likes/toggle", "POST", toggleData)
-    }
-
-    /**
-     * Crée un commentaire dans les serveurs de fallback
-     */
-    async createComment(commentData) {
-        return this.makeRequest("/api/comments", "POST", commentData)
-    }
-
-    /**
-     * Vérifie si un exposant existe dans les serveurs de fallback
+     * Vérifie si un exposant existe (local + fallback)
      */
     async checkExposantExists(exposantId) {
+        // D'abord vérifier localement
+        const existsLocally = await this.checkExposantExistsLocally(exposantId)
+        if (existsLocally) return true
+
+        // Sinon chercher dans les autres serveurs
         try {
-            await this.findExposantById(exposantId)
+            await this.makeRequest(`/api/v1/app/all-exposants`, "GET")
             return true
         } catch (error) {
             return false
@@ -133,15 +110,78 @@ class FallbackService {
     }
 
     /**
-     * Vérifie si une vidéo existe dans les serveurs de fallback
+     * Vérifie si une vidéo existe (local + fallback)
      */
     async checkVideoExists(videoId) {
+        const existsLocally = await this.checkVideoExistsLocally(videoId)
+        if (existsLocally) return true
+
         try {
-            await this.findVideoById(videoId)
+            await this.makeRequest(`/api/v1/app/all-posts`, "GET")
             return true
         } catch (error) {
             return false
         }
+    }
+
+    /**
+     * Récupère les likes d'une vidéo avec fallback
+     */
+    async findLikesByVideoId(videoId) {
+        return this.makeRequest(`/api/v1/likes/video/${videoId}`, "GET")
+    }
+
+    /**
+     * Récupère les commentaires d'une vidéo avec fallback
+     */
+    async findCommentsByVideoId(videoId) {
+        return this.makeRequest(`/api/v1/comments/video/${videoId}`, "GET")
+    }
+
+    /**
+     * Récupère les likes d'un exposant avec fallback
+     */
+    async findLikesByExposantId(exposantId) {
+        return this.makeRequest(`/api/v1/likes/exposant/${exposantId}`, "GET")
+    }
+
+    /**
+     * Récupère les commentaires d'un exposant avec fallback
+     */
+    async findCommentsByExposantId(exposantId) {
+        return this.makeRequest(`/api/v1/comments/exposant/${exposantId}`, "GET")
+    }
+
+    /**
+     * IMPORTANT : Ne PAS créer de like/commentaire cross-salon
+     * On retourne une erreur explicite
+     */
+    async createLike(likeData) {
+        throw new Error("Vous ne pouvez pas liker une vidéo d'un autre salon")
+    }
+
+    async createComment(commentData) {
+        throw new Error("Vous ne pouvez pas commenter une vidéo d'un autre salon")
+    }
+
+    async toggleLike(toggleData) {
+        throw new Error("Vous ne pouvez pas liker/unliker une vidéo d'un autre salon")
+    }
+
+    /**
+     * Récupère les données d'un exposant depuis un autre salon
+     */
+    async findExposantById(exposantId) {
+        return this.makeRequest(`/api/v1/app/all-exposants`, "GET")
+            .then(exposants => exposants.find(e => e._id === exposantId))
+    }
+
+    /**
+     * Récupère les données d'une vidéo depuis un autre salon
+     */
+    async findVideoById(videoId) {
+        return this.makeRequest(`/api/v1/app/all-posts`, "GET")
+            .then(videos => videos.find(v => v._id === videoId))
     }
 }
 
