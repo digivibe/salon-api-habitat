@@ -11,6 +11,7 @@ const notificationRoute = require('./notificationRoute')
 const likeRoute = require('./likeRoute')
 const commentRoute = require('./commentRoute')
 const testRoute = require('./testRoute')
+const unifiedRoute = require('./unifiedRoute')
 const notificationController = require('../controllers/appController')
 
 router.use('/app', appRoute)
@@ -22,7 +23,6 @@ router.use('/main-server', mainServerRoute)
 router.use('/notification', notificationRoute)
 router.post('/registerNotificationToken', notificationController.registerNotificationToken)
 // router.use('/test', testRoute) // SEULEMENT POUR LES TESTs
-router.use('/', likeRoute)
-router.use('/', commentRoute)
+router.use('/', unifiedRoute)
 
 module.exports = router
