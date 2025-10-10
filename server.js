@@ -41,6 +41,9 @@ app.use(express.urlencoded({ extended: true }));
 // Servir les fichiers téléchargés depuis le répertoire 'uploads'
 app.use("/uploads", express.static("uploads"));
 
+// Servir le panneau d'administration
+app.use("/manage", express.static("public/manage"));
+
 // Route d'accueil
 app.get("/", (req, res) => {
     res.send("WELCOME TO SALON APP API REST FULL :)");

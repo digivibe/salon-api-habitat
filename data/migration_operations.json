@@ -1,0 +1,793 @@
+{
+  "toDelete": [
+    {
+      "_id": "6707af5a13187735ba04297b",
+      "nom": "AXA",
+      "matchedWith": "AXA",
+      "similarity": 1
+    },
+    {
+      "_id": "6707ae4313187735ba0428fd",
+      "nom": "Hall du Papier Peint Dormans",
+      "matchedWith": "Hall du Papier Peint Dormans",
+      "similarity": 1
+    },
+    {
+      "_id": "6707a9e0e04d61733a93f3c5",
+      "nom": "Verisure",
+      "matchedWith": "Verisure",
+      "similarity": 1
+    },
+    {
+      "_id": "6707aeaf13187735ba042929",
+      "nom": "MARZIN PRO",
+      "matchedWith": "MARZIN PRO",
+      "similarity": 1
+    },
+    {
+      "_id": "6707ae1f13187735ba0428f2",
+      "nom": "I3M",
+      "matchedWith": "I3M",
+      "similarity": 1
+    },
+    {
+      "_id": "6707ae6413187735ba042908",
+      "nom": "CERIER GUSTIN",
+      "matchedWith": "CERIER GUSTIN",
+      "similarity": 1
+    },
+    {
+      "_id": "6707ace213187735ba0428bc",
+      "nom": "Glavier Façade",
+      "matchedWith": "Glavier Façade",
+      "similarity": 1
+    },
+    {
+      "_id": "6707ac0d13187735ba042880",
+      "nom": "Pole Sorties",
+      "matchedWith": "Pole Sorties",
+      "similarity": 1
+    },
+    {
+      "_id": "6707ae9613187735ba04291e",
+      "nom": "SAS CHAMPAC",
+      "matchedWith": "SAS CHAMPAC",
+      "similarity": 1
+    },
+    {
+      "_id": "6707ac5613187735ba042896",
+      "nom": "Flavert",
+      "matchedWith": "Flavert",
+      "similarity": 1
+    }
+  ],
+  "toUpdate": [
+    {
+      "_id": "6707af0d13187735ba04294a",
+      "oldData": {
+        "nom": "IAD",
+        "email": "expo22@contact.fr",
+        "location": "Paris, France"
+      },
+      "newData": {
+        "nom": "Christel Velly - IAD France",
+        "email": "christel.velly@iadfrance.fr",
+        "location": "Dormans",
+        "bio": "Conseillère en Immobilier Manager",
+        "phoneNumber": "06 30 56 67 54",
+        "weblink": "iadfrance.fr",
+        "linkedinLink": "https://www.linkedin.com/in/christel-velly-aab01a155/",
+        "facebookLink": "Lien",
+        "instaLink": "Lien"
+      },
+      "similarity": 0.8
+    },
+    {
+      "_id": "6707b05313187735ba042986",
+      "oldData": {
+        "nom": "Atelier Diallo",
+        "email": "expo27@contact.fr",
+        "location": "Dormans"
+      },
+      "newData": {
+        "nom": "Atelier Diallo",
+        "email": "contact@atelierdiallo.fr",
+        "location": "43 avenue de Paris",
+        "bio": "Architecte",
+        "phoneNumber": "03 26 57 66 26",
+        "weblink": "",
+        "linkedinLink": "",
+        "facebookLink": "",
+        "instaLink": "Lien"
+      },
+      "similarity": 1
+    },
+    {
+      "_id": "6707b06513187735ba042991",
+      "oldData": {
+        "nom": "Lagache",
+        "email": "expo28@contact.fr",
+        "location": "Dormans"
+      },
+      "newData": {
+        "nom": "Lagache",
+        "email": "communication@lagache.com",
+        "location": "51200 Épernay",
+        "bio": "Votre expert fermetures et vérandas",
+        "phoneNumber": "03 26 59 95 05",
+        "weblink": "lagache.com",
+        "linkedinLink": "https://www.linkedin.com/company/lagache/",
+        "facebookLink": "Lien",
+        "instaLink": "Lien"
+      },
+      "similarity": 1
+    },
+    {
+      "_id": "6707bafd13187735ba0429bd",
+      "oldData": {
+        "nom": "DOM ET VIE",
+        "email": "expo32@contact.fr",
+        "location": "Paris, France"
+      },
+      "newData": {
+        "nom": "Dom et Vie",
+        "email": "e.seneclauze@dometvie.fr",
+        "location": "11 avenue de Paris",
+        "bio": "Expert dans les travaux d’aménagements adaptés",
+        "phoneNumber": "06 76 63 93 71",
+        "weblink": "dometvie.fr",
+        "linkedinLink": "https://www.linkedin.com/company/dometviesiege/",
+        "facebookLink": "Lien",
+        "instaLink": ""
+      },
+      "similarity": 1
+    },
+    {
+      "_id": "6707aeec13187735ba04293f",
+      "oldData": {
+        "nom": "Activ Architecture",
+        "email": "expo21@contact.fr",
+        "location": "Paris, France"
+      },
+      "newData": {
+        "nom": "Activ Architecture 51",
+        "email": "severine.mottet@aa51.fr",
+        "location": "1 impasse du Calvaire",
+        "bio": "Architecte",
+        "phoneNumber": "03 26 58 84 90",
+        "weblink": "aa51.fr",
+        "linkedinLink": "",
+        "facebookLink": "",
+        "instaLink": "Lien"
+      },
+      "similarity": 0.8
+    },
+    {
+      "_id": "6707abed13187735ba042875",
+      "oldData": {
+        "nom": "Font Elec",
+        "email": "expo4@contact.fr",
+        "location": "Paris, France"
+      },
+      "newData": {
+        "nom": "Font Elec",
+        "email": "font-elec@sfr.fr",
+        "location": "51700 Mareuil-le-Port",
+        "bio": "Électricien",
+        "phoneNumber": "06 85 69 09 40",
+        "weblink": "",
+        "linkedinLink": "",
+        "facebookLink": "",
+        "instaLink": ""
+      },
+      "similarity": 1
+    },
+    {
+      "_id": "6707ac8713187735ba0428ac",
+      "oldData": {
+        "nom": "CMJ",
+        "email": "expo9@contact.fr",
+        "location": "Paris, France"
+      },
+      "newData": {
+        "nom": "CMJ",
+        "email": "christophe.cmj@gmail.com",
+        "location": "51700 Champvoisy",
+        "bio": "Conception & Rénovation",
+        "phoneNumber": "06 01 40 60 54",
+        "weblink": "",
+        "linkedinLink": "",
+        "facebookLink": "Lien",
+        "instaLink": ""
+      },
+      "similarity": 1
+    },
+    {
+      "_id": "6707af3b13187735ba042960",
+      "oldData": {
+        "nom": "Maison et services",
+        "email": "expo24@contact.fr",
+        "location": "Paris, France"
+      },
+      "newData": {
+        "nom": "Maison et Services",
+        "email": "msdormans@maison-et-services.com",
+        "location": "20 rue du Général-Leclerc",
+        "bio": "Services à la maison",
+        "phoneNumber": "03 26 58 91 71",
+        "weblink": "maison-et-services.com",
+        "linkedinLink": "",
+        "facebookLink": "Lien",
+        "instaLink": ""
+      },
+      "similarity": 1
+    },
+    {
+      "_id": "6707b07e13187735ba04299c",
+      "oldData": {
+        "nom": "CH Agencement",
+        "email": "expo29@contact.fr",
+        "location": "Dormans"
+      },
+      "newData": {
+        "nom": "CH Agencement",
+        "email": "ch.agencement51@gmail.com",
+        "location": "02650 Mézy-Moulins",
+        "bio": "Aménagement sur mesure",
+        "phoneNumber": "06 23 52 06 05",
+        "weblink": "ch-agencement.fr",
+        "linkedinLink": "",
+        "facebookLink": "",
+        "instaLink": "Lien"
+      },
+      "similarity": 1
+    },
+    {
+      "_id": "6707adde13187735ba0428d7",
+      "oldData": {
+        "nom": "Romu parcs et jardin",
+        "email": "expo12@contact.fr",
+        "location": "Paris, France"
+      },
+      "newData": {
+        "nom": "Romu Parcs et Jardins",
+        "email": "romuparcsetjardins@gmail.com",
+        "location": "02400 Bézu-Saint-Germain",
+        "bio": "Création et entretien d’espaces verts",
+        "phoneNumber": "03 23 70 07 84",
+        "weblink": "romu-parcs-et-jardins.fr",
+        "linkedinLink": "",
+        "facebookLink": "Lien",
+        "instaLink": ""
+      },
+      "similarity": 0.8
+    },
+    {
+      "_id": "6707aecc13187735ba042934",
+      "oldData": {
+        "nom": "Projets peinture",
+        "email": "expo20@contact.fr",
+        "location": "Paris, France"
+      },
+      "newData": {
+        "nom": "Projets Peinture",
+        "email": "projetspeinture@gmail.com",
+        "location": "02850 Jaulgonne",
+        "bio": "Peinture",
+        "phoneNumber": "07 62 36 55 11",
+        "weblink": "",
+        "linkedinLink": "",
+        "facebookLink": "",
+        "instaLink": ""
+      },
+      "similarity": 1
+    },
+    {
+      "_id": "6707af1e13187735ba042955",
+      "oldData": {
+        "nom": "Capucine",
+        "email": "expo23@contact.fr",
+        "location": "Paris, France"
+      },
+      "newData": {
+        "nom": "Capucine",
+        "email": "astrid_martinet@orange.fr",
+        "location": "12 rue du Général-Leclerc",
+        "bio": "Fleuriste",
+        "phoneNumber": "03 26 51 74 98",
+        "weblink": "fleuristes-et-fleurs.com",
+        "linkedinLink": "",
+        "facebookLink": "Lien",
+        "instaLink": "Lien"
+      },
+      "similarity": 1
+    },
+    {
+      "_id": "6707ae7f13187735ba042913",
+      "oldData": {
+        "nom": "JG CHARPENTE",
+        "email": "expo17@contact.fr",
+        "location": "Paris, France"
+      },
+      "newData": {
+        "nom": "JG Charpente",
+        "email": "edenwood14@gmail.com",
+        "location": "2 rue de la Sablonnière",
+        "bio": "Charpente",
+        "phoneNumber": "06 98 37 19 12",
+        "weblink": "",
+        "linkedinLink": "",
+        "facebookLink": "Lien",
+        "instaLink": ""
+      },
+      "similarity": 1
+    },
+    {
+      "_id": "6707a97ce04d61733a93f398",
+      "oldData": {
+        "nom": "L'atelier du potier",
+        "email": "expo1@contact.fr",
+        "location": "Exposant"
+      },
+      "newData": {
+        "nom": "L'Atelier du Potier",
+        "email": "latelierdupotier51@gmail.com",
+        "location": "51110 Bourgogne",
+        "bio": "Décoration",
+        "phoneNumber": "06 76 98 40 46",
+        "weblink": "",
+        "linkedinLink": "",
+        "facebookLink": "Lien",
+        "instaLink": "Lien"
+      },
+      "similarity": 1
+    },
+    {
+      "_id": "6707ae0b13187735ba0428e7",
+      "oldData": {
+        "nom": "CCPC/Comal",
+        "email": "expo13@contact.fr",
+        "location": "Paris, France"
+      },
+      "newData": {
+        "nom": "CCPC",
+        "email": "smenet@ccpc51.fr",
+        "location": "4 boulevard des Varennes",
+        "bio": "Communauté de Communes des Paysages de la Champagne",
+        "phoneNumber": "03 26 52 27 66",
+        "weblink": "ccpc51.fr",
+        "linkedinLink": "",
+        "facebookLink": "",
+        "instaLink": ""
+      },
+      "similarity": 0.8
+    },
+    {
+      "_id": "6707ac3513187735ba04288b",
+      "oldData": {
+        "nom": "Damien Brocante",
+        "email": "Damien.gilbaut@gmail.com",
+        "location": "Dormans"
+      },
+      "newData": {
+        "nom": "Damien Brocante",
+        "email": "Damien.gilbaut@gmail.com",
+        "location": "Dormans",
+        "bio": "Vide maison / débarras",
+        "phoneNumber": "0680835253",
+        "weblink": "",
+        "linkedinLink": "",
+        "facebookLink": "",
+        "instaLink": ""
+      },
+      "similarity": 1
+    }
+  ],
+  "toAdd": [
+    {
+      "categorie": "663a31d1a8616a0a3a57531a",
+      "email": "contact.worldsun@gmail.com",
+      "username": "worldsun_592",
+      "password": "50398d300ded4e67",
+      "nom": "Worldsun",
+      "location": "33700 Mérignac",
+      "bio": "Spécialistes de la batterie virtuelle",
+      "phoneNumber": "05 56 28 00 96",
+      "weblink": "https://worldsun.fr/",
+      "linkedinLink": "",
+      "facebookLink": "",
+      "instaLink": "",
+      "profil": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377650/d0ordcddjqs2edbyfcid.png",
+      "cover": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377561/fnhugw7xma2zgsmmnjbh.png",
+      "isValid": 2,
+      "statut": 1,
+      "generatedPassword": "50398d300ded4e67"
+    },
+    {
+      "categorie": "663a31d1a8616a0a3a57531a",
+      "email": "y.james@iso-logis.fr",
+      "username": "isologis_76",
+      "password": "edf7a3923a173502",
+      "nom": "Iso-Logis",
+      "location": "51726 Reims",
+      "bio": "Isolation et rénovation de façades et toitures",
+      "phoneNumber": "03 26 02 00 06",
+      "weblink": "iso-logis.fr",
+      "linkedinLink": "",
+      "facebookLink": "Lien",
+      "instaLink": "",
+      "profil": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377650/d0ordcddjqs2edbyfcid.png",
+      "cover": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377561/fnhugw7xma2zgsmmnjbh.png",
+      "isValid": 2,
+      "statut": 1,
+      "generatedPassword": "edf7a3923a173502"
+    },
+    {
+      "categorie": "663a31d1a8616a0a3a57531a",
+      "email": "iso02@iso02.fr",
+      "username": "iso02_59",
+      "password": "d4be6b17ecf5b396",
+      "nom": "ISO02",
+      "location": "02400 Bézu-Saint-Germain",
+      "bio": "Votre spécialiste du confort de l'habitat",
+      "phoneNumber": "03 23 69 38 64",
+      "weblink": "iso02.com",
+      "linkedinLink": "",
+      "facebookLink": "Lien",
+      "instaLink": "Lien",
+      "profil": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377650/d0ordcddjqs2edbyfcid.png",
+      "cover": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377561/fnhugw7xma2zgsmmnjbh.png",
+      "isValid": 2,
+      "statut": 1,
+      "generatedPassword": "d4be6b17ecf5b396"
+    },
+    {
+      "categorie": "663a31d1a8616a0a3a57531a",
+      "email": "crea-cuisine51@orange.fr",
+      "username": "creacuisine_660",
+      "password": "9d5cb6fc616febaa",
+      "nom": "Créa Cuisine",
+      "location": "30 rue Jean-de-Dormans",
+      "bio": "Conception et aménagement de cuisine sur mesure",
+      "phoneNumber": "03 26 53 52 15",
+      "weblink": "crea-cuisine.fr",
+      "linkedinLink": "",
+      "facebookLink": "",
+      "instaLink": "Lien",
+      "profil": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377650/d0ordcddjqs2edbyfcid.png",
+      "cover": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377561/fnhugw7xma2zgsmmnjbh.png",
+      "isValid": 2,
+      "statut": 1,
+      "generatedPassword": "9d5cb6fc616febaa"
+    },
+    {
+      "categorie": "663a31d1a8616a0a3a57531a",
+      "email": "secretariat@graillot51.fr",
+      "username": "graillot_973",
+      "password": "d0fcc4fd433f1376",
+      "nom": "Graillot",
+      "location": "14 rue du Docteur-Moret",
+      "bio": "Installation de menuiseries sur mesure",
+      "phoneNumber": "03 26 58 85 15",
+      "weblink": "graillot51.fr",
+      "linkedinLink": "",
+      "facebookLink": "Lien",
+      "instaLink": "",
+      "profil": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377650/d0ordcddjqs2edbyfcid.png",
+      "cover": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377561/fnhugw7xma2zgsmmnjbh.png",
+      "isValid": 2,
+      "statut": 1,
+      "generatedPassword": "d0fcc4fd433f1376"
+    },
+    {
+      "categorie": "663a31d1a8616a0a3a57531a",
+      "email": "aurelienzat@hotmail.fr",
+      "username": "yourdiagimmo_585",
+      "password": "6ddd50b918d9748c",
+      "nom": "Yourdiagimmo",
+      "location": "51700 Dormans",
+      "bio": "Diagnostiqueur énergétique",
+      "phoneNumber": "06 36 37 23 67",
+      "weblink": "yourdiagimmo.fr",
+      "linkedinLink": "",
+      "facebookLink": "",
+      "instaLink": "",
+      "profil": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377650/d0ordcddjqs2edbyfcid.png",
+      "cover": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377561/fnhugw7xma2zgsmmnjbh.png",
+      "isValid": 2,
+      "statut": 1,
+      "generatedPassword": "6ddd50b918d9748c"
+    },
+    {
+      "categorie": "663a31d1a8616a0a3a57531a",
+      "email": "ksimon@cuisine-plus.com",
+      "username": "cuisineplus_121",
+      "password": "bbc1b0c86e12ac95",
+      "nom": "Cuisine Plus",
+      "location": "51370 Thillois",
+      "bio": "Aménagement intérieur",
+      "phoneNumber": "03 26 77 60 20",
+      "weblink": "cuisine-plus.fr",
+      "linkedinLink": "",
+      "facebookLink": "Lien",
+      "instaLink": "Lien",
+      "profil": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377650/d0ordcddjqs2edbyfcid.png",
+      "cover": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377561/fnhugw7xma2zgsmmnjbh.png",
+      "isValid": 2,
+      "statut": 1,
+      "generatedPassword": "bbc1b0c86e12ac95"
+    },
+    {
+      "categorie": "663a31d1a8616a0a3a57531a",
+      "email": "actibat51@laposte.net",
+      "username": "actibat51_133",
+      "password": "26e113e81568e73a",
+      "nom": "Actibat 51",
+      "location": "51500 Taissy",
+      "bio": "Entreprise de construction",
+      "phoneNumber": "03 26 40 92 48",
+      "weblink": "",
+      "linkedinLink": "",
+      "facebookLink": "",
+      "instaLink": "",
+      "profil": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377650/d0ordcddjqs2edbyfcid.png",
+      "cover": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377561/fnhugw7xma2zgsmmnjbh.png",
+      "isValid": 2,
+      "statut": 1,
+      "generatedPassword": "26e113e81568e73a"
+    },
+    {
+      "categorie": "663a31d1a8616a0a3a57531a",
+      "email": "jlbcharpente@orange.fr",
+      "username": "jlbcharpente_808",
+      "password": "e56ad0c7051e07ce",
+      "nom": "JLB Charpente",
+      "location": "02330 Celles-lès-Condé",
+      "bio": "Charpente",
+      "phoneNumber": "03 23 82 00 98",
+      "weblink": "jlbcharpente.fr",
+      "linkedinLink": "",
+      "facebookLink": "",
+      "instaLink": "",
+      "profil": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377650/d0ordcddjqs2edbyfcid.png",
+      "cover": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377561/fnhugw7xma2zgsmmnjbh.png",
+      "isValid": 2,
+      "statut": 1,
+      "generatedPassword": "e56ad0c7051e07ce"
+    },
+    {
+      "categorie": "663a31d1a8616a0a3a57531a",
+      "email": "courgeydesign@gmail.com",
+      "username": "courgeydesign_470",
+      "password": "085d67a47628706e",
+      "nom": "Courgey Design",
+      "location": "51700 Verneuil",
+      "bio": "Peintre décorateur",
+      "phoneNumber": "06 70 07 42 57",
+      "weblink": "",
+      "linkedinLink": "",
+      "facebookLink": "Lien",
+      "instaLink": "Lien",
+      "profil": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377650/d0ordcddjqs2edbyfcid.png",
+      "cover": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377561/fnhugw7xma2zgsmmnjbh.png",
+      "isValid": 2,
+      "statut": 1,
+      "generatedPassword": "085d67a47628706e"
+    },
+    {
+      "categorie": "663a31d1a8616a0a3a57531a",
+      "email": "georges.plaquiste@gmail.com",
+      "username": "georgesfredericplaquiste_48",
+      "password": "d746b2ae4e342d65",
+      "nom": "Georges Frédéric Plaquiste",
+      "location": "51700 Troissy",
+      "bio": "Plaquiste",
+      "phoneNumber": "06 86 67 75 87",
+      "weblink": "georges-frederic-plaquiste.com",
+      "linkedinLink": "",
+      "facebookLink": "Lien",
+      "instaLink": "Lien",
+      "profil": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377650/d0ordcddjqs2edbyfcid.png",
+      "cover": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377561/fnhugw7xma2zgsmmnjbh.png",
+      "isValid": 2,
+      "statut": 1,
+      "generatedPassword": "d746b2ae4e342d65"
+    },
+    {
+      "categorie": "663a31d1a8616a0a3a57531a",
+      "email": "maguy.rivard@gmail.com",
+      "username": "maguyrivard_228",
+      "password": "8b80919677ac6a39",
+      "nom": "Maguy Rivard",
+      "location": "Dormans",
+      "bio": "Conseillere thermomix",
+      "phoneNumber": "",
+      "weblink": "",
+      "linkedinLink": "https://www.linkedin.com/in/maguy-rivard-991531196/?originalSubdomain=fr",
+      "facebookLink": "https://www.facebook.com/maguy.rivard/",
+      "instaLink": "",
+      "profil": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377650/d0ordcddjqs2edbyfcid.png",
+      "cover": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377561/fnhugw7xma2zgsmmnjbh.png",
+      "isValid": 2,
+      "statut": 1,
+      "generatedPassword": "8b80919677ac6a39"
+    },
+    {
+      "categorie": "663a31d1a8616a0a3a57531a",
+      "email": "dominique.miguel@vorwerk.fr",
+      "username": "vorwerkkobold_195",
+      "password": "3a647ae1def27738",
+      "nom": "Vorwerk (Kobold)",
+      "location": "Dormans",
+      "bio": "Aspirateur kolbold",
+      "phoneNumber": "",
+      "weblink": "http://vorwerk.com/fr/fr/s/shop/produits/kobold/c/kobold",
+      "linkedinLink": "",
+      "facebookLink": "https://www.facebook.com/Kobold.france",
+      "instaLink": "",
+      "profil": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377650/d0ordcddjqs2edbyfcid.png",
+      "cover": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377561/fnhugw7xma2zgsmmnjbh.png",
+      "isValid": 2,
+      "statut": 1,
+      "generatedPassword": "3a647ae1def27738"
+    },
+    {
+      "categorie": "663a31d1a8616a0a3a57531a",
+      "email": "ent.chaudeymarco@gmail.com",
+      "username": "comptoirhorloger_320",
+      "password": "94f466c1225eba82",
+      "nom": "Comptoir Horloger",
+      "location": "Dormans",
+      "bio": "Marco Chaudey, votre artisan horloger.",
+      "phoneNumber": "06 80 73 16 25",
+      "weblink": "comptoir-horloger.fr",
+      "linkedinLink": "",
+      "facebookLink": "Lien",
+      "instaLink": "",
+      "profil": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377650/d0ordcddjqs2edbyfcid.png",
+      "cover": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377561/fnhugw7xma2zgsmmnjbh.png",
+      "isValid": 2,
+      "statut": 1,
+      "generatedPassword": "94f466c1225eba82"
+    },
+    {
+      "categorie": "663a31d1a8616a0a3a57531a",
+      "email": "sas-lelabour@orange.fr",
+      "username": "saslelabour_309",
+      "password": "6fb7038ed43ca902",
+      "nom": "SAS Lelabour",
+      "location": "3 rue de la Sablonnière",
+      "bio": "Maçonnerie Couverture",
+      "phoneNumber": "03 26 58 25 58",
+      "weblink": "",
+      "linkedinLink": "",
+      "facebookLink": "Lien",
+      "instaLink": "",
+      "profil": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377650/d0ordcddjqs2edbyfcid.png",
+      "cover": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377561/fnhugw7xma2zgsmmnjbh.png",
+      "isValid": 2,
+      "statut": 1,
+      "generatedPassword": "6fb7038ed43ca902"
+    },
+    {
+      "categorie": "663a31d1a8616a0a3a57531a",
+      "email": "secretariat@bpc-brouette.fr",
+      "username": "bpcbrouette_831",
+      "password": "707eb7ed72619ea5",
+      "nom": "BPC Brouette",
+      "location": "15 rue de la Sablonnière",
+      "bio": "Plomberie Chauffage",
+      "phoneNumber": "03 26 58 25 58",
+      "weblink": "",
+      "linkedinLink": "",
+      "facebookLink": "",
+      "instaLink": "",
+      "profil": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377650/d0ordcddjqs2edbyfcid.png",
+      "cover": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377561/fnhugw7xma2zgsmmnjbh.png",
+      "isValid": 2,
+      "statut": 1,
+      "generatedPassword": "707eb7ed72619ea5"
+    },
+    {
+      "categorie": "663a31d1a8616a0a3a57531a",
+      "email": "secretariat@fourgeot-fermetures.fr",
+      "username": "fourgeotmaconnerie_954",
+      "password": "f6dbb39c9c64dbbb",
+      "nom": "Fourgeot Maçonnerie",
+      "location": "77260 Sept-Sorts",
+      "bio": "Constructeur, Maçonnerie Bâtiment",
+      "phoneNumber": "01.64.36.06.73",
+      "weblink": "fourgeot-maconnerie.fr",
+      "linkedinLink": "",
+      "facebookLink": "",
+      "instaLink": "",
+      "profil": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377650/d0ordcddjqs2edbyfcid.png",
+      "cover": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377561/fnhugw7xma2zgsmmnjbh.png",
+      "isValid": 2,
+      "statut": 1,
+      "generatedPassword": "f6dbb39c9c64dbbb"
+    },
+    {
+      "categorie": "663a31d1a8616a0a3a57531a",
+      "email": "ETCHArtthierry51700@gmail.com",
+      "username": "eurletchartthierry_602",
+      "password": "2ef1fe0b6b3b0600",
+      "nom": "EURL Etchart Thierry",
+      "location": "51700 Vandières",
+      "bio": "Rénovation",
+      "phoneNumber": "06 08 32 85 31",
+      "weblink": "",
+      "linkedinLink": "",
+      "facebookLink": "Lien",
+      "instaLink": "",
+      "profil": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377650/d0ordcddjqs2edbyfcid.png",
+      "cover": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377561/fnhugw7xma2zgsmmnjbh.png",
+      "isValid": 2,
+      "statut": 1,
+      "generatedPassword": "2ef1fe0b6b3b0600"
+    },
+    {
+      "categorie": "663a31d1a8616a0a3a57531a",
+      "email": "contact@alc-artlarochecouverture.fr",
+      "username": "alc_332",
+      "password": "3106f6479b826663",
+      "nom": "ALC",
+      "location": "51700 Vincelles",
+      "bio": "Art Laroche Couverture",
+      "phoneNumber": "09 70 96 88 37",
+      "weblink": "alc-artlarochecouverture.fr",
+      "linkedinLink": "",
+      "facebookLink": "Lien",
+      "instaLink": "",
+      "profil": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377650/d0ordcddjqs2edbyfcid.png",
+      "cover": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377561/fnhugw7xma2zgsmmnjbh.png",
+      "isValid": 2,
+      "statut": 1,
+      "generatedPassword": "3106f6479b826663"
+    },
+    {
+      "categorie": "663a31d1a8616a0a3a57531a",
+      "email": "contact@artisan-tapissier-77.fr",
+      "username": "artisantapissier77_668",
+      "password": "ab6ebeb049950c35",
+      "nom": "Artisan Tapissier 77",
+      "location": "77450 Esbly",
+      "bio": "Tapissier décorateur",
+      "phoneNumber": "06 45 68 26 70",
+      "weblink": "artisan-tapissier-77.fr",
+      "linkedinLink": "",
+      "facebookLink": "Lien",
+      "instaLink": "",
+      "profil": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377650/d0ordcddjqs2edbyfcid.png",
+      "cover": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377561/fnhugw7xma2zgsmmnjbh.png",
+      "isValid": 2,
+      "statut": 1,
+      "generatedPassword": "ab6ebeb049950c35"
+    },
+    {
+      "categorie": "663a31d1a8616a0a3a57531a",
+      "email": "hello@digivibe.fr",
+      "username": "creditagricole_97",
+      "password": "90bc33225a5267c6",
+      "nom": "Crédit Agricole",
+      "location": "51088 Reims",
+      "bio": "Fondation du Crédit Agricole du Nord Est",
+      "phoneNumber": "03.26.83.34.59",
+      "weblink": "https://www.credit-agricole.fr/ca-nord-est/particulier.html",
+      "linkedinLink": "",
+      "facebookLink": "",
+      "instaLink": "",
+      "profil": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377650/d0ordcddjqs2edbyfcid.png",
+      "cover": "https://res.cloudinary.com/dfqiz1ndw/image/upload/v1721377561/fnhugw7xma2zgsmmnjbh.png",
+      "isValid": 2,
+      "statut": 1,
+      "generatedPassword": "90bc33225a5267c6"
+    }
+  ],
+  "toKeep": [
+    {
+      "nom": "Dormans Coworking",
+      "reason": "Dormans Coworking - has publications, must not be touched"
+    }
+  ]
+}

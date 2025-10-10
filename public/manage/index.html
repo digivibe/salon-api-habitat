@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Exposants - Salon Habitat</title>
+    <link rel="stylesheet" href="/manage/style.css">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="screen active">
+        <div class="login-container">
+            <div class="login-card">
+                <h1>🏛️ Administration</h1>
+                <p class="subtitle">Salon Habitat</p>
+
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="username">Nom d'utilisateur</label>
+                        <input type="text" id="username" name="username" required autofocus>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Mot de passe</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">
+                        Connexion
+                    </button>
+
+                    <div id="loginError" class="error-message" style="display: none;"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Screen -->
+    <div id="dashboardScreen" class="screen">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-content">
+                <h1>🏛️ Gestion des Exposants</h1>
+                <div class="header-actions">
+                    <span id="adminName" class="admin-name"></span>
+                    <button onclick="logout()" class="btn btn-secondary btn-sm">
+                        Déconnexion
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="tabs">
+            <button class="tab active" onclick="showTab('stats')">📊 Statistiques</button>
+            <button class="tab" onclick="showTab('list')">📋 Liste</button>
+            <button class="tab" onclick="showTab('create')">➕ Nouveau</button>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="dashboard-content">
+            <!-- Statistics Tab -->
+            <div id="statsTab" class="tab-content active">
+                <h2>Statistiques Générales</h2>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-info">
+                            <div class="stat-label">Total Exposants</div>
+                            <div class="stat-value" id="totalExposants">-</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card success">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-info">
+                            <div class="stat-label">Actifs</div>
+                            <div class="stat-value" id="activeExposants">-</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card warning">
+                        <div class="stat-icon">⏸️</div>
+                        <div class="stat-info">
+                            <div class="stat-label">Inactifs</div>
+                            <div class="stat-value" id="inactiveExposants">-</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card info">
+                        <div class="stat-icon">👑</div>
+                        <div class="stat-info">
+                            <div class="stat-label">Administrateurs</div>
+                            <div class="stat-value" id="adminCount">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-section">
+                    <h3>Par Niveau de Validation</h3>
+                    <div class="validation-stats" id="validationStats"></div>
+                </div>
+
+                <div class="stats-section">
+                    <h3>Par Catégorie</h3>
+                    <div class="category-stats" id="categoryStats"></div>
+                </div>
+
+                <div class="stats-section">
+                    <h3>Contenus</h3>
+                    <div class="content-stats">
+                        <div class="content-stat">
+                            <span class="content-icon">🎥</span>
+                            <span class="content-label">Vidéos:</span>
+                            <span class="content-value" id="videoCount">-</span>
+                        </div>
+                        <div class="content-stat">
+                            <span class="content-icon">🎁</span>
+                            <span class="content-label">Bondeals:</span>
+                            <span class="content-value" id="bondealCount">-</span>
+                        </div>
+                        <div class="content-stat">
+                            <span class="content-icon">💬</span>
+                            <span class="content-label">Commentaires:</span>
+                            <span class="content-value" id="commentCount">-</span>
+                        </div>
+                        <div class="content-stat">
+                            <span class="content-icon">❤️</span>
+                            <span class="content-label">Likes:</span>
+                            <span class="content-value" id="likeCount">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- List Tab -->
+            <div id="listTab" class="tab-content">
+                <div class="list-header">
+                    <h2>Liste des Exposants</h2>
+                    <button onclick="loadExposants()" class="btn btn-secondary btn-sm">
+                        🔄 Actualiser
+                    </button>
+                </div>
+
+                <!-- Filters -->
+                <div class="filters">
+                    <input type="text" id="searchInput" placeholder="🔍 Rechercher (nom, email, username)..." onkeyup="applyFilters()">
+
+                    <select id="filterValid" onchange="applyFilters()">
+                        <option value="">Tous les niveaux</option>
+                        <option value="0">Simple exposant</option>
+                        <option value="1">Validé sans publication</option>
+                        <option value="2">Validé avec publication</option>
+                        <option value="3">Administrateur</option>
+                    </select>
+
+                    <select id="filterStatus" onchange="applyFilters()">
+                        <option value="">Tous les statuts</option>
+                        <option value="1">Actif</option>
+                        <option value="0">Inactif</option>
+                    </select>
+                </div>
+
+                <!-- Table -->
+                <div class="table-container">
+                    <table class="exposants-table">
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Email</th>
+                                <th>Catégorie</th>
+                                <th>Validation</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="exposantsTable">
+                            <tr>
+                                <td colspan="6" class="loading">Chargement...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination" id="pagination"></div>
+            </div>
+
+            <!-- Create Tab -->
+            <div id="createTab" class="tab-content">
+                <h2>Créer un Nouvel Exposant</h2>
+
+                <form id="createForm" class="exposant-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="createNom">Nom *</label>
+                            <input type="text" id="createNom" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="createUsername">Username *</label>
+                            <input type="text" id="createUsername" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="createEmail">Email *</label>
+                            <input type="email" id="createEmail" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="createPassword">Mot de passe *</label>
+                            <input type="password" id="createPassword" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="createCategorie">Catégorie *</label>
+                            <select id="createCategorie" required>
+                                <option value="">Sélectionner...</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="createLocation">Localisation *</label>
+                            <input type="text" id="createLocation" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="createBio">Bio / Description *</label>
+                        <textarea id="createBio" rows="3" required></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="createPhone">Téléphone</label>
+                            <input type="tel" id="createPhone">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="createWeblink">Site Web</label>
+                            <input type="url" id="createWeblink">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="createLinkedin">LinkedIn</label>
+                            <input type="url" id="createLinkedin">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="createFacebook">Facebook</label>
+                            <input type="url" id="createFacebook">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="createInstagram">Instagram</label>
+                            <input type="url" id="createInstagram">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="createIsValid">Niveau de validation</label>
+                            <select id="createIsValid">
+                                <option value="0">Simple exposant</option>
+                                <option value="1">Validé sans publication</option>
+                                <option value="2" selected>Validé avec publication</option>
+                                <option value="3">Administrateur</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            Créer l'Exposant
+                        </button>
+                        <button type="reset" class="btn btn-secondary">
+                            Réinitialiser
+                        </button>
+                    </div>
+
+                    <div id="createMessage" class="message" style="display: none;"></div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal for Edit -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Modifier l'Exposant</h2>
+                <button class="modal-close" onclick="closeEditModal()">&times;</button>
+            </div>
+            <form id="editForm" class="exposant-form">
+                <input type="hidden" id="editId">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editNom">Nom</label>
+                        <input type="text" id="editNom">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editEmail">Email</label>
+                        <input type="email" id="editEmail">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="editLocation">Localisation</label>
+                    <input type="text" id="editLocation">
+                </div>
+
+                <div class="form-group">
+                    <label for="editBio">Bio</label>
+                    <textarea id="editBio" rows="3"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editPhone">Téléphone</label>
+                        <input type="tel" id="editPhone">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editIsValid">Niveau de validation</label>
+                        <select id="editIsValid">
+                            <option value="0">Simple exposant</option>
+                            <option value="1">Validé sans publication</option>
+                            <option value="2">Validé avec publication</option>
+                            <option value="3">Administrateur</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editStatut">Statut</label>
+                        <select id="editStatut">
+                            <option value="1">Actif</option>
+                            <option value="0">Inactif</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        Enregistrer
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="closeEditModal()">
+                        Annuler
+                    </button>
+                </div>
+
+                <div id="editMessage" class="message" style="display: none;"></div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/manage/script.js"></script>
+</body>
+</html>
