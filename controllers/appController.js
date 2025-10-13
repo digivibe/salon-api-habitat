@@ -168,7 +168,7 @@ exports.getAllExposants = async (req, res) => {
 
 exports.getAllPosts = async (req, res) => {
     try {
-        const posts = await ExposantVideo.find({ statut: 1 }).populate('exposantId', 'nom email bio profil cover location isValid phoneNumber linkedinLink facebookLink instaLink weblink').sort({ createdAt: -1 })
+        const posts = await ExposantVideo.find({ statut: 1 }).populate('exposantId', 'nom email bio profil cover location isValid phoneNumber linkedinLink facebookLink instaLink weblink').sort({ _id: 1 })
         res.json(posts)
     } catch (error) {
         res.status(500).send({ message: 'Erreur lors de la requête', error })
