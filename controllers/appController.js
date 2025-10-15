@@ -157,10 +157,37 @@ exports.createNewEvent = async (req, res) => {
     }
 }
 
+// Dans appController.js, remplacez la fonction getAllExposants
+
 exports.getAllExposants = async (req, res) => {
     try {
-        const exposants = await Exposant.find({ statut: 1 }).sort({ createdAt: 1 })
-        res.json(exposants)
+        const exposants = await Exposant.find({ statut: 1 })
+        
+        // Tri personnalisé : alphabétique puis chiffres
+        const sortedExposants = exposants.sort((a, b) => {
+            const nameA = a.nom.toLowerCase().trim()
+            const nameB = b.nom.toLowerCase().trim()
+            
+            // Vérifier si les noms commencent par un chiffre
+            const startsWithNumberA = /^[0-9]/.test(nameA)
+            const startsWithNumberB = /^[0-9]/.test(nameB)
+            
+            // Si l'un commence par un chiffre et pas l'autre
+            if (startsWithNumberA && !startsWithNumberB) return 1  // A après B
+            if (!startsWithNumberA && startsWithNumberB) return -1 // A avant B
+            
+            // Sinon, tri alphabétique normal
+            return nameA.localeCompare(nameB, 'fr', { 
+                sensitivity: 'base',
+                ignorePunctuation: true 
+            })
+        })
+        
+        // IMPORTANT : Inverser l'ordre pour compenser le .reverse() du frontend
+        // Le frontend fait .reverse(), donc on inverse ici pour obtenir le bon ordre final
+        const reversedExposants = sortedExposants.reverse()
+        
+        res.json(reversedExposants)
     } catch (error) {
         res.status(500).send({ message: 'Erreur lors de la requête', error })
     }
