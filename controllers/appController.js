@@ -195,8 +195,27 @@ exports.getAllExposants = async (req, res) => {
 
 exports.getAllPosts = async (req, res) => {
     try {
-        const posts = await ExposantVideo.find({ statut: 1 }).populate('exposantId', 'nom email bio profil cover location isValid phoneNumber linkedinLink facebookLink instaLink weblink').sort({ _id: 1 })
-        res.json(posts)
+        // ID de la vidéo à mettre en première position
+        const priorityVideoId = process.env.PRIORITY_VIDEO_ID || null
+
+        const posts = await ExposantVideo.find({ statut: 1 })
+            .populate('exposantId', 'nom email bio profil cover location isValid phoneNumber linkedinLink facebookLink instaLink weblink')
+            .sort({ _id: -1 }) // Du plus récent au plus vieux
+
+        // Si un ID prioritaire est défini, réorganiser les posts
+        if (priorityVideoId) {
+            const priorityPost = posts.find(post => post._id.toString() === priorityVideoId)
+            const otherPosts = posts.filter(post => post._id.toString() !== priorityVideoId)
+
+            // Si la vidéo prioritaire existe, la mettre en premier
+            if (priorityPost) {
+                res.json([priorityPost, ...otherPosts])
+            } else {
+                res.json(posts)
+            }
+        } else {
+            res.json(posts)
+        }
     } catch (error) {
         res.status(500).send({ message: 'Erreur lors de la requête', error })
     }
