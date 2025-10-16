@@ -206,10 +206,10 @@ exports.getAllPosts = async (req, res) => {
         if (priorityVideoId) {
             const priorityPost = posts.find(post => post._id.toString() === priorityVideoId)
             const otherPosts = posts.filter(post => post._id.toString() !== priorityVideoId)
-
+            const otherPostsr = otherPosts.reverse()
             // Si la vidéo prioritaire existe, la mettre en premier
             if (priorityPost) {
-                const rr = [priorityPost, ...otherPosts]
+                const rr = [priorityPost, ...otherPostsr]
                 res.json(rr.reverse())
             } else {
                 res.json(posts)
