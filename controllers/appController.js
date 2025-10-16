@@ -209,7 +209,7 @@ exports.getAllPosts = async (req, res) => {
 
             // Si la vidéo prioritaire existe, la mettre en premier
             if (priorityPost) {
-                res.json([priorityPost, ...otherPosts])
+                res.json([otherPosts, ...priorityPost])
             } else {
                 res.json(posts)
             }
