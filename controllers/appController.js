@@ -195,27 +195,31 @@ exports.getAllExposants = async (req, res) => {
 
 exports.getAllPosts = async (req, res) => {
     try {
-        // ID de la vidéo à mettre en première position
-        const priorityVideoId = process.env.PRIORITY_VIDEO_ID || null
+        // ID de l'exposant dont les vidéos doivent apparaître en premier
+        const priorityExposantId = process.env.PRIORITY_EXPOSANT_ID || null
 
         const posts = await ExposantVideo.find({ statut: 1 })
             .populate('exposantId', 'nom email bio profil cover location isValid phoneNumber linkedinLink facebookLink instaLink weblink')
-            .sort({ _id: 1 }) // Du plus récent au plus vieux
+            .sort({ createdAt: -1 }) // Tri par date de création décroissante (récent → ancien)
 
-        // Si un ID prioritaire est défini, réorganiser les posts
-        if (priorityVideoId) {
-            const priorityPost = posts.find(post => post._id.toString() === priorityVideoId)
-            const otherPosts = posts.filter(post => post._id.toString() !== priorityVideoId)
-            const otherPostsr = otherPosts.reverse()
-            // Si la vidéo prioritaire existe, la mettre en premier
-            if (priorityPost) {
-                const rr = [priorityPost, ...otherPostsr]
-                res.json(rr.reverse())
-            } else {
-                res.json(posts)
-            }
+        // Si un exposant prioritaire est défini, réorganiser les posts
+        if (priorityExposantId) {
+            // Séparer les vidéos de l'exposant prioritaire des autres
+            const priorityPosts = posts.filter(post =>
+                post.exposantId && post.exposantId._id.toString() === priorityExposantId
+            )
+            const otherPosts = posts.filter(post =>
+                !post.exposantId || post.exposantId._id.toString() !== priorityExposantId
+            )
+
+            // Ordre : vidéos prioritaires (récent → ancien), puis autres vidéos (récent → ancien)
+            const orderedPosts = [...priorityPosts, ...otherPosts]
+
+            // Inverser tout avant d'envoyer au client
+            res.json(orderedPosts.reverse())
         } else {
-            res.json(posts)
+            // Sans exposant prioritaire, inverser simplement les posts
+            res.json(posts.reverse())
         }
     } catch (error) {
         res.status(500).send({ message: 'Erreur lors de la requête', error })
