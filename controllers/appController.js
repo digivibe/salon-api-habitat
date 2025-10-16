@@ -200,7 +200,7 @@ exports.getAllPosts = async (req, res) => {
 
         const posts = await ExposantVideo.find({ statut: 1 })
             .populate('exposantId', 'nom email bio profil cover location isValid phoneNumber linkedinLink facebookLink instaLink weblink')
-            .sort({ _id: -1 }) // Du plus récent au plus vieux
+            .sort({ _id: 1 }) // Du plus récent au plus vieux
 
         // Si un ID prioritaire est défini, réorganiser les posts
         if (priorityVideoId) {
