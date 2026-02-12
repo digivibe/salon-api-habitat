@@ -1,209 +1,320 @@
-const Like = require("../models/likeModel")
-const Exposant = require("../models/exposantModel")
-const ExposantVideo = require("../models/exposantVideoModel")
-const fallbackService = require("../services/fallbackService")
+const Like = require('../models/Like')
+const Exposant = require('../models/Exposant')
+const ExposantVideo = require('../models/ExposantVideo')
 
 /**
- * Vérifie si l'exposant et la vidéo appartiennent au même salon (serveur)
+ * Toggle like (créer ou supprimer)
+ * POST /api/v2/likes/toggle
+ * Requiert authentification
  */
-const checkSalonOwnership = async (exposantId, videoId) => {
-    const exposant = await Exposant.findById(exposantId)
-    const video = await ExposantVideo.findById(videoId).populate('exposantId')
-
-    if (!exposant) {
-        throw new Error("Exposant non trouvé dans ce salon")
-    }
-
-    if (!video) {
-        throw new Error("Vidéo non trouvée dans ce salon")
-    }
-
-    // Si la vidéo n'a pas d'exposantId, c'est une vidéo orpheline
-    if (!video.exposantId) {
-        throw new Error("Cette vidéo n'appartient à aucun exposant")
-    }
-
-    return { exposant, video }
-}
-
-// Get likes by video ID avec fallback intelligent
-exports.getLikesByVideoID = async (req, res) => {
+const toggleLike = async (req, res) => {
     try {
-        // D'abord chercher localement
-        const likes = await Like.find({ videoId: req.params.videoId })
-            .populate('exposantId', 'nom profil')
+        const { videoId } = req.body
 
-        if (likes.length > 0) {
-            return res.status(200).json(likes)
-        }
-
-        // Si vide localement, vérifier si la vidéo existe dans un autre salon
-        console.log("[v0] Aucun like trouvé localement, vérification dans les autres salons")
-
-        try {
-            const fallbackLikes = await fallbackService.findLikesByVideoId(req.params.videoId)
-
-            // Marquer les likes comme venant d'un autre salon (lecture seule)
-            const markedLikes = fallbackLikes.map(like => ({
-                ...like,
-                _readOnly: true,
-                _fromOtherSalon: true
-            }))
-
-            return res.status(200).json(markedLikes)
-        } catch (fallbackError) {
-            console.log("[v0] Aucun like trouvé dans les autres salons")
-            // Retourner un tableau vide si rien trouvé nulle part
-            return res.status(200).json([])
-        }
-    } catch (error) {
-        console.error('Erreur lors de la récupération des likes:', error)
-        res.status(500).json({ error: error.message })
-    }
-}
-
-// Get likes by exposant ID avec fallback
-exports.getLikesByExposantID = async (req, res) => {
-    try {
-        const likes = await Like.find({ exposantId: req.params.exposantId })
-            .populate('exposantId', 'nom profil')
-
-        if (likes.length > 0) {
-            return res.status(200).json(likes)
-        }
-
-        console.log("[v0] Aucun like trouvé localement pour cet exposant")
-
-        try {
-            const fallbackLikes = await fallbackService.findLikesByExposantId(req.params.exposantId)
-            return res.status(200).json(fallbackLikes)
-        } catch (fallbackError) {
-            console.log("[v0] Aucun like trouvé dans les autres salons")
-            return res.status(200).json([])
-        }
-    } catch (error) {
-        res.status(500).json({ error: error.message })
-    }
-}
-
-// Toggle like AVEC VÉRIFICATION DE SALON
-exports.toggleLike = async (req, res) => {
-    const { exposantId, videoId } = req.body
-
-    try {
-        // ÉTAPE 1 : Vérifier que l'exposant et la vidéo sont du même salon
-        let exposant, video
-
-        try {
-            const ownership = await checkSalonOwnership(exposantId, videoId)
-            exposant = ownership.exposant
-            video = ownership.video
-        } catch (ownershipError) {
-            return res.status(403).json({
-                error: "Action interdite",
-                message: "Vous ne pouvez interagir qu'avec les vidéos de votre salon",
-                details: ownershipError.message
+        if (!videoId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Video ID requis'
             })
         }
 
-        // ÉTAPE 2 : Vérifier que l'exposant et le créateur de la vidéo sont du même salon
-        const videoOwner = await Exposant.findById(video.exposantId._id)
+        // Vérifier que la vidéo existe et appartient au même salon
+        const video = await ExposantVideo.findById(videoId)
 
-        if (!videoOwner) {
-            return res.status(403).json({
-                error: "Action interdite",
-                message: "Cette vidéo appartient à un exposant d'un autre salon"
+        if (!video) {
+            return res.status(404).json({
+                success: false,
+                message: 'Vidéo non trouvée'
             })
         }
 
-        // ÉTAPE 3 : Toggle le like (tout est OK)
-        const existingLike = await Like.findOne({ exposantId, videoId })
+        // Vérifier que la vidéo appartient au même salon que l'exposant
+        const videoSalon = video.salon.toString()
+        const exposantSalon = req.exposant.salon?.toString()
+
+        if (!exposantSalon || videoSalon !== exposantSalon) {
+            return res.status(403).json({
+                success: false,
+                message: 'Vous ne pouvez liker que les vidéos de votre salon'
+            })
+        }
+
+        // Vérifier si le like existe déjà (actif ou inactif)
+        const existingLike = await Like.findOne({
+            salon: req.exposant.salon,
+            exposantId: req.exposantId,
+            videoId: videoId
+        })
 
         if (existingLike) {
-            await Like.findByIdAndDelete(existingLike._id)
-            console.log(`[Like] Exposant ${exposantId} a unliké la vidéo ${videoId}`)
+            if (existingLike.statut === 1) {
+                // Désactiver le like (soft delete)
+                existingLike.statut = 0
+                await existingLike.save()
+                console.log('👍 [LikeController] Like désactivé:', {
+                    videoId,
+                    exposantId: req.exposantId,
+                    statut: existingLike.statut
+                })
+                return res.json({
+                    success: true,
+                    message: 'Like supprimé',
+                    liked: false
+                })
+            } else {
+                // Réactiver le like
+                existingLike.statut = 1
+                await existingLike.save()
+                console.log('👍 [LikeController] Like réactivé:', {
+                    videoId,
+                    exposantId: req.exposantId,
+                    statut: existingLike.statut
+                })
+                return res.json({
+                    success: true,
+                    message: 'Like ajouté',
+                    liked: true,
+                    data: existingLike
+                })
+            }
         } else {
-            const newLike = new Like({ exposantId, videoId })
-            await newLike.save()
-            console.log(`[Like] Exposant ${exposantId} a liké la vidéo ${videoId}`)
+            // Créer le like
+            const newLike = await Like.create({
+                salon: req.exposant.salon,
+                exposantId: req.exposantId,
+                videoId: videoId,
+                statut: 1
+            })
+
+            console.log('👍 [LikeController] Like créé:', {
+                videoId,
+                exposantId: req.exposantId,
+                salon: req.exposant.salon,
+                statut: newLike.statut
+            })
+
+            return res.status(201).json({
+                success: true,
+                message: 'Like ajouté',
+                liked: true,
+                data: newLike
+            })
         }
-
-        // Retourner tous les likes de la vidéo
-        const likes = await Like.find({ videoId })
-            .populate('exposantId', 'nom profil')
-
-        res.status(200).json(likes)
-
     } catch (error) {
-        console.error('Erreur lors du toggle like:', error)
-        res.status(500).json({ error: error.message })
+        console.error('Error toggling like:', error)
+        res.status(500).json({
+            success: false,
+            message: 'Erreur lors du toggle du like',
+            error: error.message
+        })
     }
 }
 
-// Create like AVEC VÉRIFICATION
-exports.createLike = async (req, res) => {
+/**
+ * Récupérer les likes d'une vidéo
+ * GET /api/v2/likes/video/:videoId?salon=:salonId
+ */
+const getLikesByVideoId = async (req, res) => {
     try {
-        const { exposantId, videoId } = req.body
+        const { videoId } = req.params
+        const { salon } = req.query
 
-        // Vérifier que c'est dans le même salon
-        try {
-            await checkSalonOwnership(exposantId, videoId)
-        } catch (ownershipError) {
-            return res.status(403).json({
-                error: "Action interdite",
-                message: "Vous ne pouvez liker que les vidéos de votre salon"
+        if (!salon) {
+            return res.status(400).json({
+                success: false,
+                message: 'Salon ID requis dans la query (?salon=:id)'
             })
         }
 
-        const newLike = new Like(req.body)
-        await newLike.save()
+        const likes = await Like.find({ salon, videoId, statut: 1 })
+            .populate('exposantId', 'nom profil email')
+            .sort({ createdAt: -1 })
 
-        res.status(201).json(newLike)
+        res.json({
+            success: true,
+            count: likes.length,
+            data: likes
+        })
     } catch (error) {
-        res.status(400).json({ error: error.message })
+        console.error('Error getting likes by video:', error)
+        res.status(500).json({
+            success: false,
+            message: 'Erreur lors de la récupération des likes',
+            error: error.message
+        })
     }
 }
 
-// Get all likes (admin uniquement)
-exports.getAllLikes = async (req, res) => {
+/**
+ * Récupérer les likes d'un exposant
+ * GET /api/v2/likes/exposant/:exposantId?salon=:salonId
+ */
+const getLikesByExposantId = async (req, res) => {
     try {
-        const likes = await Like.find()
-            .populate('exposantId', 'nom profil')
-            .populate('videoId', 'name description')
-        res.status(200).json(likes)
+        const { exposantId } = req.params
+        const { salon } = req.query
+
+        if (!salon) {
+            return res.status(400).json({
+                success: false,
+                message: 'Salon ID requis dans la query (?salon=:id)'
+            })
+        }
+
+        const likes = await Like.find({ salon, exposantId, statut: 1 })
+            .populate('videoId', 'name description videoUrl')
+            .sort({ createdAt: -1 })
+
+        res.json({
+            success: true,
+            count: likes.length,
+            data: likes
+        })
     } catch (error) {
-        res.status(500).json({ error: error.message })
+        console.error('Error getting likes by exposant:', error)
+        res.status(500).json({
+            success: false,
+            message: 'Erreur lors de la récupération des likes',
+            error: error.message
+        })
     }
 }
 
-// Get like by ID
-exports.getLikeByID = async (req, res) => {
+/**
+ * Vérifier si un exposant a liké une vidéo
+ * GET /api/v2/likes/check?videoId=:id
+ * Requiert authentification
+ */
+const checkLike = async (req, res) => {
+    try {
+        const { videoId } = req.query
+
+        if (!videoId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Video ID requis dans la query (?videoId=:id)'
+            })
+        }
+
+        const like = await Like.findOne({
+            salon: req.exposant.salon,
+            exposantId: req.exposantId,
+            videoId: videoId,
+            statut: 1
+        })
+
+        res.json({
+            success: true,
+            liked: !!like,
+            data: like || null
+        })
+    } catch (error) {
+        console.error('Error checking like:', error)
+        res.status(500).json({
+            success: false,
+            message: 'Erreur lors de la vérification du like',
+            error: error.message
+        })
+    }
+}
+
+/**
+ * Supprimer un like
+ * DELETE /api/v2/likes/:id
+ * Requiert authentification
+ */
+const deleteLike = async (req, res) => {
     try {
         const like = await Like.findById(req.params.id)
-            .populate('exposantId', 'nom profil')
-            .populate('videoId', 'name description')
 
         if (!like) {
-            return res.status(404).json({ message: "Like not found" })
+            return res.status(404).json({
+                success: false,
+                message: 'Like non trouvé'
+            })
         }
 
-        res.status(200).json(like)
+        // Vérifier que le like appartient à l'exposant connecté
+        if (like.exposantId.toString() !== req.exposantId.toString()) {
+            return res.status(403).json({
+                success: false,
+                message: 'Vous n\'avez pas le droit de supprimer ce like'
+            })
+        }
+
+        await like.deleteOne()
+
+        res.json({
+            success: true,
+            message: 'Like supprimé avec succès'
+        })
     } catch (error) {
-        res.status(500).json({ error: error.message })
+        console.error('Error deleting like:', error)
+        res.status(500).json({
+            success: false,
+            message: 'Erreur lors de la suppression du like',
+            error: error.message
+        })
     }
 }
 
-// Delete a like
-exports.deleteLike = async (req, res) => {
+/**
+ * Récupérer les statistiques des likes pour une vidéo
+ * GET /api/v2/likes/stats/video/:videoId?salon=:salonId
+ */
+const getLikeStats = async (req, res) => {
     try {
-        const deletedLike = await Like.findByIdAndDelete(req.params.id)
+        const { videoId } = req.params
+        const { salon } = req.query
 
-        if (!deletedLike) {
-            return res.status(404).json({ message: "Like not found" })
+        if (!salon) {
+            return res.status(400).json({
+                success: false,
+                message: 'Salon ID requis dans la query (?salon=:id)'
+            })
         }
 
-        res.status(200).json({ message: "Like deleted successfully" })
+        const count = await Like.countDocuments({ salon, videoId, statut: 1 })
+        
+        // Vérifier aussi les likes réels pour debug
+        const likes = await Like.find({ salon, videoId, statut: 1 }).select('_id exposantId statut createdAt')
+        
+        console.log('📊 [LikeController] Stats likes:', {
+            videoId,
+            salon,
+            count,
+            likesCount: likes.length,
+            likes: likes.map(l => ({
+                id: l._id,
+                exposantId: l.exposantId,
+                statut: l.statut,
+                createdAt: l.createdAt
+            }))
+        })
+
+        res.json({
+            success: true,
+            data: {
+                videoId,
+                count
+            }
+        })
     } catch (error) {
-        res.status(500).json({ error: error.message })
+        console.error('Error getting like stats:', error)
+        res.status(500).json({
+            success: false,
+            message: 'Erreur lors de la récupération des statistiques',
+            error: error.message
+        })
     }
 }
+
+module.exports = {
+    toggleLike,
+    getLikesByVideoId,
+    getLikesByExposantId,
+    checkLike,
+    deleteLike,
+    getLikeStats
+}
+

@@ -1,30 +1,39 @@
 const express = require('express')
 const router = express.Router()
 
-const appRoute = require('./appRoute')
-const authRoute = require('./authRoute')
-const exposantRoute = require('./exposantRoute')
-const eventRoute = require('./eventRoute')
-const userRoute = require('./userRoute')
-const mainServerRoute = require('./mainServerRoute')
-const notificationRoute = require('./notificationRoute')
-const likeRoute = require('./likeRoute')
-const commentRoute = require('./commentRoute')
-const testRoute = require('./testRoute')
-const unifiedRoute = require('./unifiedRoute')
-const manageRoute = require('./manageRoute')
-const notificationController = require('../controllers/appController')
+// Import des routes
+const salonRoutes = require('./salonRoutes')
+const appRoutes = require('./appRoutes')
+const authRoutes = require('./authRoutes')
+const exposantRoutes = require('./exposantRoutes')
+const likeRoutes = require('./likeRoutes')
+const commentRoutes = require('./commentRoutes')
+const notificationRoutes = require('./notificationRoutes')
+const adminRoutes = require('./adminRoutes')
+const docsRoutes = require('./docsRoutes')
+const qrCodeRoutes = require('./qrCodeRoutes')
 
-router.use('/app', appRoute)
-router.use('/auth', authRoute)
-router.use('/exposant', exposantRoute)
-router.use('/event', eventRoute)
-router.use('/user', userRoute)
-router.use('/main-server', mainServerRoute)
-router.use('/notification', notificationRoute)
-router.use('/manage', manageRoute)
-router.post('/registerNotificationToken', notificationController.registerNotificationToken)
-// router.use('/test', testRoute) // SEULEMENT POUR LES TESTs
-router.use('/', unifiedRoute)
+// Routes API v2
+router.use('/salons', salonRoutes)
+router.use('/app', appRoutes)
+router.use('/auth', authRoutes)
+router.use('/exposants', exposantRoutes)
+router.use('/likes', likeRoutes)
+router.use('/comments', commentRoutes)
+router.use('/notifications', notificationRoutes)
+router.use('/admin', adminRoutes)
+router.use('/docs', docsRoutes)
+router.use('/qrcode', qrCodeRoutes)
+
+// Route de test
+router.get('/test', (req, res) => {
+    res.json({
+        success: true,
+        message: 'API v2 is working!',
+        version: '2.0.0',
+        timestamp: new Date().toISOString()
+    })
+})
 
 module.exports = router
+

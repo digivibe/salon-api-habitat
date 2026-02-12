@@ -1,614 +1,501 @@
+const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
-const crypto = require('crypto')
+const Exposant = require('../models/Exposant')
+const Categorie = require('../models/Categorie')
+const Invite = require('../models/Invite')
 
-const { tokenCreator } = require('../libs/tokenCreator')
-const { generatePassword, cryptPassword } = require('../libs/generatePassword')
-const sendPassword = require('../libs/mailSenderForgotPassword')
-const { checkExposantLogin } = require('../libs/checkExposantLogin')
-const { visitorIdByToken } = require('../libs/visitorIdByToken')
-const Categorie = require('../models/categorieModel')
-const Exposant = require('../models/exposantModel')
-const Login = require('../models/loginModel')
-
-const { sendEmail } = require('../libs/mailSender2');
-
-exports.addMultipleExposants = async (req, res) => {
-    try {
-        const { exposants } = req.body
-
-        if (!Array.isArray(exposants) || exposants.length === 0) {
-            return res.status(400).json({ message: 'Veuillez fournir une liste valide d’exposants' })
-        }
-
-        let createdExposants = []
-
-        for (let exposant of exposants) {
-            const {
-                categorie, email, nom, location, bio, phoneNumber, linkedinLink, facebookLink, instaLink, weblink, password
-            } = exposant
-
-            let message = ''
-
-
-            const trimmedData = {
-                categorie: categorie ? categorie.trim() : '',
-                email: email ? email.trim() : '',
-                password: password ? password.trim() : crypto.randomBytes(6).toString('hex'),
-                nom: nom ? nom.trim() : '',
-                location: location ? location.trim() : '',
-                bio: bio ? bio.trim() : '',
-                phoneNumber: phoneNumber ? phoneNumber.trim() : '',
-                linkedinLink: linkedinLink ? linkedinLink.trim() : '',
-                facebookLink: facebookLink ? facebookLink.trim() : '',
-                instaLink: instaLink ? instaLink.trim() : '',
-                weblink: weblink ? weblink.trim() : ''
-            }
-
-            if (!trimmedData.categorie) {
-                console.log(`❌ Exposant ignoré: ${nom} (Catégorie manquante)`)
-                continue
-            }
-
-            const categorieExist = await Categorie.findById(trimmedData.categorie)
-            if (!categorieExist) {
-                console.log(`❌ Exposant ignoré: ${nom} (Catégorie invalide)`)
-                continue
-            }
-
-            if (!trimmedData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedData.email)) {
-                console.log(`❌ Exposant ignoré: ${nom} (Email invalide)`)
-                continue
-            }
-
-            const emailExists = await Exposant.findOne({ email: trimmedData.email })
-            if (emailExists) {
-                console.log(`❌ Exposant ignoré: ${nom} (Email déjà utilisé)`)
-                continue
-            }
-
-            const nameExists = await Exposant.findOne({ nom: trimmedData.nom })
-            if (nameExists) {
-                console.log(`❌ Exposant ignoré: ${nom} (Nom déjà utilisé)`)
-                continue
-            }
-
-            if (!trimmedData.nom || trimmedData.nom.length > 100) {
-                console.log(`❌ Exposant ignoré: ${email} (Nom invalide)`)
-                continue
-            }
-
-            if (!trimmedData.location || trimmedData.location.length > 256) {
-                console.log(`❌ Exposant ignoré: ${email} (Adresse invalide)`)
-                continue
-            }
-
-            if (!trimmedData.bio || trimmedData.bio.length > 256) {
-                console.log(`❌ Exposant ignoré: ${email} (Bio invalide)`)
-                continue
-            }
-
-            if (trimmedData.phoneNumber && !/^\+?[1-9]\d{1,14}$/.test(trimmedData.phoneNumber)) {
-                console.log(`❌ Exposant ignoré: ${email} (Numéro de téléphone invalide)`)
-                continue
-            }
-
-            const newExposant = new Exposant({
-                categorie: trimmedData.categorie,
-                email: trimmedData.email,
-                username: trimmedData.email,
-                password: trimmedData.password,
-                nom: trimmedData.nom,
-                location: trimmedData.location,
-                bio: trimmedData.bio,
-                phoneNumber: trimmedData.phoneNumber,
-                linkedinLink: trimmedData.linkedinLink,
-                facebookLink: trimmedData.facebookLink,
-                instaLink: trimmedData.instaLink,
-                weblink: trimmedData.weblink
-            })
-
-            const result = await newExposant.save()
-
-            console.log(`✅ Exposant ajouté: ${nom} (${email}) | Mot de passe: ${trimmedData.password}`)
-
-            createdExposants.push({
-                email: trimmedData.email,
-                nom: trimmedData.nom,
-                bio: trimmedData.bio,
-                location: trimmedData.location,
-                phoneNumber: trimmedData.phoneNumber,
-                password: trimmedData.password
-            })
-        }
-
-        res.status(201).json({
-            message: `${createdExposants.length} exposants ajoutés avec succès`,
-            exposants: createdExposants
-        })
-    } catch (error) {
-        console.error('❌ Erreur serveur:', error.message)
-        res.status(500).json({ message: 'Erreur serveur', error: error.message })
-    }
+/**
+ * Générer un token JWT
+ */
+const generateToken = (id) => {
+    return jwt.sign({ id }, process.env.JWT_SECRET, {
+        expiresIn: process.env.JWT_EXPIRE || '7d'
+    })
 }
 
-exports.signup = async (req, res) => {
-    const {
-        categorie,
-        email,
-        password,
-        confirmPassword,
-        nom,
-        location,
-        bio,
-        phoneNumber,
-        linkedinLink,
-        facebookLink,
-        instaLink,
-        weblink
-    } = req.body;
-
-    let message = "";
-
+/**
+ * Inscription d'un nouvel exposant
+ * POST /api/v2/auth/register
+ */
+const register = async (req, res) => {
     try {
-        const token = await tokenCreator(req.body.token);
-        const visitorId = await visitorIdByToken(token);
+        const {
+            salon,
+            categorie,
+            email,
+            password,
+            confirmPassword,
+            nom,
+            location,
+            bio,
+            phoneNumber,
+            linkedinLink,
+            facebookLink,
+            instaLink,
+            weblink
+        } = req.body
 
-        // Nettoyage des données
-        const trimmedData = {
-            categorie: categorie ? categorie.trim() : '',
-            email: email ? email.trim() : '',
-            password: password ? password.trim() : '',
-            confirmPassword: confirmPassword ? confirmPassword.trim() : '',
-            nom: nom ? nom.trim() : '',
-            location: location ? location.trim() : '',
-            bio: bio ? bio.trim() : '',
-            phoneNumber: phoneNumber ? phoneNumber.trim() : '',
-            linkedinLink: linkedinLink ? linkedinLink.trim() : '',
-            facebookLink: facebookLink ? facebookLink.trim() : '',
-            instaLink: instaLink ? instaLink.trim() : '',
-            weblink: weblink ? weblink.trim() : ''
-        };
-
-        // ... (toutes vos validations existantes restent identiques) ...
-        
-        if (!trimmedData.categorie) {
-            message = "Veuillez choisir la catégorie!";
-            throw new Error(message);
+        // Validation des champs requis
+        if (!salon || !categorie || !email || !password || !nom || !location || !bio) {
+            return res.status(400).json({
+                success: false,
+                message: 'Tous les champs requis doivent être fournis (salon, categorie, email, password, nom, location, bio)'
+            })
         }
-
-        const categorieExist = await Categorie.findById(categorie);
-        if (!categorieExist) {
-            message = "Veuillez choisir la catégorie!";
-            throw new Error(message);
-        }
-
-        if (!trimmedData.email || trimmedData.email.length === 0 || trimmedData.email.length > 256) {
-            message = "Veuillez saisir votre email. Pas plus de 256 caractères!";
-            throw new Error(message);
-        }
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(trimmedData.email)) {
-            message = "Format de l'email saisi invalide!";
-            throw new Error(message);
-        }
-
-        const existingUser2 = await Exposant.findOne({ email: trimmedData.email });
-        if (existingUser2) {
-            message = "Cet email est déjà utilisé par un autre compte!";
-            throw new Error(message);
-        }
-
-        const existingUser3 = await Exposant.findOne({ nom: trimmedData.nom });
-        if (existingUser3) {
-            message = "Cet identifiant est déjà utilisé par un autre compte!";
-            throw new Error(message);
-        }
-
-        if (!(trimmedData.password && trimmedData.password.length >= 5 && trimmedData.password.length <= 20)) {
-            message = "Le mot de passe doit être compris entre 5 et 20 caractères!";
-            throw new Error(message);
-        }
-
-        if (trimmedData.password !== trimmedData.confirmPassword) {
-            message = "Les mots de passe ne correspondent pas!";
-            throw new Error(message);
-        }
-
-        if (!trimmedData.nom || trimmedData.nom.length === 0 || trimmedData.nom.length > 100) {
-            message = "Veuillez saisir le nom. Pas plus de 100 caractères!";
-            throw new Error(message);
-        }
-
-        if (!trimmedData.location || trimmedData.location.length === 0 || trimmedData.location.length > 256) {
-            message = "Veuillez saisir l'adresse. Pas plus de 256 caractères!";
-            throw new Error(message);
-        }
-
-        if (!trimmedData.bio || trimmedData.bio.length === 0 || trimmedData.bio.length > 256) {
-            message = "Veuillez saisir la bio. Pas plus de 256 caractères!";
-            throw new Error(message);
-        }
-
-        if (trimmedData.linkedinLink && trimmedData.linkedinLink.length > 256) {
-            message = "Le lien LinkedIn ne doit pas dépasser 256 caractères!";
-            throw new Error(message);
-        }
-
-        const phoneMatch = /^\+?[1-9]\d{1,14}$/;
-        if (!trimmedData.phoneNumber || trimmedData.phoneNumber.length > 20) {
-            message = "Le numéro de téléphone doit être au format valide!";
-            throw new Error(message);
-        }
-
-        // Création du nouvel exposant
-        const newExposant = new Exposant({
-            categorie: trimmedData.categorie,
-            email: trimmedData.email,
-            username: trimmedData.email,
-            password: trimmedData.password,
-            nom: trimmedData.nom,
-            location: trimmedData.location,
-            bio: trimmedData.bio,
-            isValid: 0,
-            phoneNumber: trimmedData.phoneNumber,
-            linkedinLink: trimmedData.linkedinLink,
-            facebookLink: trimmedData.facebookLink,
-            instaLink: trimmedData.instaLink,
-            weblink: trimmedData.weblink
-        });
-
-        const result = await newExposant.save();
-
-        const newLogin = new Login({
-            visitorId,
-            exposantId: result._id,
-            session: 1
-        });
-        await newLogin.save();
-
-        // Template email amélioré avec interpolation correcte
-        const mailContent = `
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nouveau exposant inscrit</title>
-</head>
-<body style="margin:0;padding:0;background:#f5f7fb;">
-  <center style="width:100%;background:#f5f7fb;">
-    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse;background:#f5f7fb;">
-      <tr>
-        <td align="center" style="padding:24px 12px;">
-          <table role="presentation" cellpadding="0" cellspacing="0" width="600" style="max-width:600px;width:100%;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #e8ecf5;">
-            <!-- Header -->
-            <tr>
-              <td style="padding:24px 28px;background:#0b1b34;">
-                <h1 style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:20px;line-height:24px;color:#ffffff;">
-                  🎉 Nouveau exposant inscrit
-                </h1>
-                <p style="margin:8px 0 0 0;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:18px;color:#c8d3e6;">
-                  Un nouvel exposant vient de créer un compte sur votre plateforme.
-                </p>
-              </td>
-            </tr>
-
-            <!-- Summary badges -->
-            <tr>
-              <td style="padding:16px 28px 0 28px;">
-                <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse;">
-                  <tr>
-                    <td style="padding:0 0 12px 0;">
-                      <span style="display:inline-block;padding:6px 10px;border-radius:999px;background:#eef4ff;color:#1e40af;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:12px;">
-                        Catégorie : ${(categorieExist && (categorieExist.name || categorieExist.nom || categorieExist.label)) || trimmedData.categorie}
-                      </span>
-                      <span style="display:inline-block;padding:6px 10px;border-radius:999px;background:#ecfdf5;color:#065f46;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:12px;margin-left:6px;">
-                        Statut : En attente de validation
-                      </span>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-
-            <!-- Details title -->
-            <tr>
-              <td style="padding:8px 28px 0 28px;">
-                <h2 style="margin:0 0 8px 0;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:20px;color:#0b1b34;">
-                  Détails de l'exposant
-                </h2>
-              </td>
-            </tr>
-
-            <!-- Details table -->
-            <tr>
-              <td style="padding:0 28px 8px 28px;">
-                <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse;border:1px solid #edf1f7;border-radius:10px;overflow:hidden;">
-                  <tr>
-                    <td style="width:38%;padding:12px 14px;background:#fafbfe;border-bottom:1px solid #edf1f7;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#4b5563;">
-                      Nom / Identifiant
-                    </td>
-                    <td style="padding:12px 14px;border-bottom:1px solid #edf1f7;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#111827;">
-                      ${trimmedData.nom}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style="width:38%;padding:12px 14px;background:#fafbfe;border-bottom:1px solid #edf1f7;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#4b5563;">
-                      Email
-                    </td>
-                    <td style="padding:12px 14px;border-bottom:1px solid #edf1f7;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#111827;word-break:break-all;">
-                      ${trimmedData.email}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style="width:38%;padding:12px 14px;background:#fafbfe;border-bottom:1px solid #edf1f7;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#4b5563;">
-                      Téléphone
-                    </td>
-                    <td style="padding:12px 14px;border-bottom:1px solid #edf1f7;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#111827;">
-                      ${trimmedData.phoneNumber || "—"}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style="width:38%;padding:12px 14px;background:#fafbfe;border-bottom:1px solid #edf1f7;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#4b5563;">
-                      Localisation
-                    </td>
-                    <td style="padding:12px 14px;border-bottom:1px solid #edf1f7;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#111827;">
-                      ${trimmedData.location}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style="width:38%;padding:12px 14px;background:#fafbfe;border-bottom:1px solid #edf1f7;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#4b5563;">
-                      Catégorie
-                    </td>
-                    <td style="padding:12px 14px;border-bottom:1px solid #edf1f7;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#111827;">
-                      ${(categorieExist && (categorieExist.name || categorieExist.nom || categorieExist.label)) || trimmedData.categorie}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style="width:38%;padding:12px 14px;background:#fafbfe;border-bottom:1px solid #edf1f7;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#4b5563;">
-                      Bio
-                    </td>
-                    <td style="padding:12px 14px;border-bottom:1px solid #edf1f7;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#111827;">
-                      ${trimmedData.bio}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style="width:38%;padding:12px 14px;background:#fafbfe;border-bottom:1px solid #edf1f7;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#4b5563;">
-                      LinkedIn
-                    </td>
-                    <td style="padding:12px 14px;border-bottom:1px solid #edf1f7;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#1d4ed8;">
-                      ${trimmedData.linkedinLink ? `<a href="${trimmedData.linkedinLink}" style="color:#1d4ed8;text-decoration:underline;">${trimmedData.linkedinLink}</a>` : "—"}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style="width:38%;padding:12px 14px;background:#fafbfe;border-bottom:1px solid #edf1f7;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#4b5563;">
-                      Facebook
-                    </td>
-                    <td style="padding:12px 14px;border-bottom:1px solid #edf1f7;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#1d4ed8;">
-                      ${trimmedData.facebookLink ? `<a href="${trimmedData.facebookLink}" style="color:#1d4ed8;text-decoration:underline;">${trimmedData.facebookLink}</a>` : "—"}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style="width:38%;padding:12px 14px;background:#fafbfe;border-bottom:1px solid #edf1f7;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#4b5563;">
-                      Instagram
-                    </td>
-                    <td style="padding:12px 14px;border-bottom:1px solid #edf1f7;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#1d4ed8;">
-                      ${trimmedData.instaLink ? `<a href="${trimmedData.instaLink}" style="color:#1d4ed8;text-decoration:underline;">${trimmedData.instaLink}</a>` : "—"}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style="width:38%;padding:12px 14px;background:#fafbfe;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#4b5563;">
-                      Site Web
-                    </td>
-                    <td style="padding:12px 14px;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#1d4ed8;">
-                      ${trimmedData.weblink ? `<a href="${trimmedData.weblink}" style="color:#1d4ed8;text-decoration:underline;">${trimmedData.weblink}</a>` : "—"}
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-
-            <!-- Actions -->
-            <tr>
-              <td align="center" style="padding:20px 28px 28px 28px;">
-                <a href="${process.env.ADMIN_URL || 'https://votre-admin.example.com/exposants'}" 
-                   style="display:inline-block;padding:12px 18px;background:#008f00;color:#ffffff;text-decoration:none;border-radius:10px;font-family:Arial,Helvetica,sans-serif;font-size:14px;">
-                  Ouvrir l'admin
-                </a>
-                <a href="mailto:${trimmedData.email}" 
-                   style="display:inline-block;padding:12px 18px;background:#0b1b34;color:#ffffff;text-decoration:none;border-radius:10px;font-family:Arial,Helvetica,sans-serif;font-size:14px;margin-left:8px;">
-                  Contacter l'exposant
-                </a>
-              </td>
-            </tr>
-
-            <!-- Footer -->
-            <tr>
-              <td style="padding:12px 28px 24px 28px;background:#f8fafc;">
-                <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:18px;color:#64748b;">
-                  Cet email vous a été envoyé automatiquement suite à une inscription. ID visiteur: 
-                  <span style="font-weight:bold;color:#0b1b34;">${visitorId || '—'}</span>.
-                </p>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
-  </center>
-</body>
-</html>`;
-
-        // Envoi de l'email avec Zoho Mail
-        try {
-            await sendEmail('digivibe.fr@gmail.com', 'Nouveau exposant inscrit', mailContent);
-            console.log('Email de notification envoyé avec succès');
-        } catch (emailError) {
-            console.error('Erreur lors de l\'envoi de l\'email:', emailError);
-            // Note: On ne fait pas échouer l'inscription si l'email échoue
-        }
-
-        const existingUser = await Exposant.findOne({ email: trimmedData.email });
-        res.status(200).json({ 
-            status: 200, 
-            message: "DONE", 
-            token, 
-            exposant_infos: existingUser 
-        });
-        
-    } catch (error) {
-        console.error('Erreur dans signup:', error);
-        res.status(200).json({ 
-            status: 400, 
-            message: message || "Erreur lors de l'inscription", 
-            error: error.message 
-        });
-    }
-};
-
-
-exports.login = async (req, res) => {
-    const { email, password } = req.body
-    let message = ""
-    try {
-        const token = await tokenCreator(req.body.token)
-        const visitorId = await visitorIdByToken(token)
-        const username = email.trim();
-        const existingEmail = await Exposant.findOne({ email })
-        const existingIdentifiant = await Exposant.findOne({ username })
-
-        if (!existingEmail && !existingIdentifiant) {
-            message = "Identifiant ou mot de passe incorrect!"
-            throw new Error(message)
-        }
-
-        const existingUser = existingEmail || existingIdentifiant;
-
-        const isMatch = await bcrypt.compare(password, existingUser.password)
-        if (!isMatch) {
-            message = "Email ou mot de passe incorrect!"
-            throw new Error(message)
-        }
-
-        const newLogin = new Login({
-            visitorId,
-            exposantId: existingUser._id,
-            session: 1
-        })
-        await newLogin.save()
-
-        res.status(200).json({ status: 200, message: "DONE", token, exposant_infos: existingUser })
-    } catch (error) {
-        res.status(200).json({ status: 400, message: message || "Erreur lors de la connexion", error: error.message })
-        console.log(error)
-    }
-}
-
-exports.forgotPassword = async (req, res) => {
-    try {
-        const { email } = req.body;
 
         // Validation de l'email
-        if (!email) {
-            return res.status(400).json({ status: 400, message: "Veuillez fournir un email valide." });
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Format d\'email invalide'
+            })
         }
 
-        // Vérification de l'existence de l'utilisateur
-        const existingUser = await Exposant.findOne({ email });
-
-        if (!existingUser) {
-            message = "Aucun compte associé à cet email"
-            throw new Error(message)
+        // Validation du mot de passe
+        if (password.length < 5 || password.length > 20) {
+            return res.status(400).json({
+                success: false,
+                message: 'Le mot de passe doit contenir entre 5 et 20 caractères'
+            })
         }
 
-
-        // Génération d'un nouveau mot de passe
-        const newPassword = generatePassword();
-        existingUser.password = newPassword;
-
-        // Sauvegarder l'utilisateur avec le middleware qui hache le mot de passe
-        await existingUser.save();
-
-        // Préparation du contenu de l'email
-        const emailContent = `
-        <tr>
-        <td style="padding-bottom: 20px;" align="center" valign="top" class="imgHero"></td>
-        </tr>
-        <tr>
-        <td style="padding-bottom: 20px; padding-left: 20px; padding-right: 20px;" align="center" valign="top" class="mainTitle">
-        <p style="color: #000000; font-size: 20px; line-height: 1.5; margin-bottom: 10px;">
-        Bonjour ${existingUser.nom},
-        </p>
-        <p style="color: #000000; font-size: 24px; line-height: 1.5;font-weight: bold;">
-        Voici votre nouveau mot de passe :
-        </p>
-        <p style="color: #000000; font-size: 24px; line-height: 1.5; font-weight: bold; text-align: center; margin-top: 10px;">
-        ${newPassword}
-        </p>
-        <p style="color: #000000; font-size: 16px; line-height: 1.5; margin-top: 20px;">
-        Vous pouvez désormais utiliser ce nouveau mot de passe pour accéder à notre application. En cas de questions ou d'assistance supplémentaire, n'hésitez pas à nous contacter.
-        </p>
-        </td>
-        </tr>
-        `;
-
-        // Envoi de l'email avec le nouveau mot de passe
-        const emailResponse = await sendPassword({
-            to: email,
-            subject: 'Nouveau Mot de Passe',
-            html: emailContent
-        });
-
-        if (!emailResponse.success) {
-            throw new Error(emailResponse.error || 'Erreur lors de l\'envoi de l\'email.');
+        // Vérifier que les mots de passe correspondent
+        if (password !== confirmPassword) {
+            return res.status(400).json({
+                success: false,
+                message: 'Les mots de passe ne correspondent pas'
+            })
         }
 
-        // Réponse réussie
-        res.status(200).json({
-            status: 200,
-            message: "Mot de passe envoyé avec succès.",
-            password: newPassword
-        });
+        // Vérifier que la catégorie existe
+        const categorieExist = await Categorie.findOne({ _id: categorie, salon, statut: 1 })
+        if (!categorieExist) {
+            return res.status(400).json({
+                success: false,
+                message: 'Catégorie invalide ou n\'appartient pas à ce salon'
+            })
+        }
 
+        // Vérifier si l'email existe déjà pour ce salon
+        const existingEmail = await Exposant.findOne({ salon, email })
+        if (existingEmail) {
+            return res.status(400).json({
+                success: false,
+                message: 'Cet email est déjà utilisé pour ce salon'
+            })
+        }
+
+        // Vérifier si le nom existe déjà pour ce salon
+        const existingNom = await Exposant.findOne({ salon, nom })
+        if (existingNom) {
+            return res.status(400).json({
+                success: false,
+                message: 'Ce nom est déjà utilisé pour ce salon'
+            })
+        }
+
+        // Créer le nouvel exposant
+        const newExposant = await Exposant.create({
+            salon,
+            categorie,
+            email: email.trim().toLowerCase(),
+            username: email.trim().toLowerCase(),
+            password,
+            nom: nom.trim(),
+            location: location.trim(),
+            bio: bio.trim(),
+            phoneNumber: phoneNumber?.trim() || '',
+            linkedinLink: linkedinLink?.trim() || '',
+            facebookLink: facebookLink?.trim() || '',
+            instaLink: instaLink?.trim() || '',
+            weblink: weblink?.trim() || '',
+            isValid: 0, // En attente de validation
+            statut: 1
+        })
+
+        // Générer le token JWT
+        const token = generateToken(newExposant._id)
+
+        // Retourner les informations (sans le mot de passe)
+        const exposantData = newExposant.toObject()
+        delete exposantData.password
+
+        res.status(201).json({
+            success: true,
+            message: 'Inscription réussie. Votre compte est en attente de validation.',
+            data: {
+                token,
+                exposant: exposantData
+            }
+        })
     } catch (error) {
-        // Gestion centralisée des erreurs
-        console.error(error);
+        console.error('Error in register:', error)
         res.status(500).json({
-            status: 500,
-            message: "Erreur lors de la demande de nouveau mot de passe.",
-            error: error.message,
-        });
+            success: false,
+            message: 'Erreur lors de l\'inscription',
+            error: error.message
+        })
     }
-};
+}
 
-exports.checkPassword = async (req, res) => {
-    const { token, password } = req.body
-    let message = ""
+/**
+ * Connexion d'un exposant
+ * POST /api/v2/auth/login
+ */
+const login = async (req, res) => {
     try {
-        const expoStatut = await checkExposantLogin(token);
+        const { email, password, salon } = req.body
 
-        if (!expoStatut) {
-            message = "Vous n'êtes pas connecté pour effectuer cette action!";
-            throw new Error(message);
+        // Validation des champs requis
+        if (!email || !password) {
+            return res.status(400).json({
+                success: false,
+                message: 'Email et mot de passe requis'
+            })
         }
 
-        const myinfo = await Exposant.findById(expoStatut);
-        if (!myinfo) {
-            message = "Vous n'êtes pas autorisé pour effectuer cette action!"
-            throw new Error(message)
+        // Trouver l'exposant par email
+        const exposant = await Exposant.findOne({ email: email.trim().toLowerCase() })
+            .populate('categorie', 'label color borderColor')
+            .populate('salon', 'nom slug')
+
+        if (!exposant) {
+            return res.status(401).json({
+                success: false,
+                message: 'Email ou mot de passe incorrect'
+            })
         }
 
-        const isMatch = await bcrypt.compare(password, myinfo.password)
-        if (!isMatch) {
-            message = "Mot de passe incorrect"
-            throw new Error(message)
+        // Vérifier que l'exposant appartient au salon si salon est fourni
+        if (salon && exposant.salon.toString() !== salon.toString()) {
+            return res.status(403).json({
+                success: false,
+                message: 'Vous n\'avez pas accès à ce salon'
+            })
         }
 
-        res.status(200).json({ status: 200, message: "DONE" })
+        // Vérifier que l'exposant est actif
+        if (exposant.statut === 0) {
+            return res.status(403).json({
+                success: false,
+                message: 'Votre compte est désactivé'
+            })
+        }
+
+        // Vérifier le mot de passe
+        const isPasswordValid = await exposant.comparePassword(password)
+        if (!isPasswordValid) {
+            return res.status(401).json({
+                success: false,
+                message: 'Email ou mot de passe incorrect'
+            })
+        }
+
+        // Générer le token JWT
+        const token = generateToken(exposant._id)
+
+        // Retourner les informations (sans le mot de passe)
+        const exposantData = exposant.toObject()
+        delete exposantData.password
+
+        res.json({
+            success: true,
+            message: 'Connexion réussie',
+            data: {
+                token,
+                exposant: exposantData
+            }
+        })
     } catch (error) {
-        res.status(200).json({ status: 400, message: message || "Erreur lors de la connexion", error: error.message })
-        console.log(error)
+        console.error('Error in login:', error)
+        res.status(500).json({
+            success: false,
+            message: 'Erreur lors de la connexion',
+            error: error.message
+        })
     }
+}
+
+/**
+ * Mot de passe oublié
+ * POST /api/v2/auth/forgot-password
+ */
+const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body
+
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                message: 'Email requis'
+            })
+        }
+
+        // Trouver l'exposant
+        const exposant = await Exposant.findOne({ email: email.trim().toLowerCase() })
+
+        if (!exposant) {
+            // Pour des raisons de sécurité, on ne révèle pas si l'email existe
+            return res.json({
+                success: true,
+                message: 'Si cet email existe, un nouveau mot de passe vous sera envoyé'
+            })
+        }
+
+        // Générer un nouveau mot de passe aléatoire
+        const crypto = require('crypto')
+        const newPassword = crypto.randomBytes(8).toString('hex')
+
+        // Mettre à jour le mot de passe
+        exposant.password = newPassword
+        await exposant.save()
+
+        // TODO: Envoyer l'email avec le nouveau mot de passe
+        // const { sendPasswordEmail } = require('../services/emailService')
+        // await sendPasswordEmail(exposant.email, exposant.nom, newPassword)
+
+        res.json({
+            success: true,
+            message: 'Si cet email existe, un nouveau mot de passe vous sera envoyé',
+            // En développement, on peut retourner le mot de passe (à supprimer en production)
+            ...(process.env.NODE_ENV === 'development' && { password: newPassword })
+        })
+    } catch (error) {
+        console.error('Error in forgotPassword:', error)
+        res.status(500).json({
+            success: false,
+            message: 'Erreur lors de la demande de nouveau mot de passe',
+            error: error.message
+        })
+    }
+}
+
+/**
+ * Vérifier le mot de passe actuel
+ * POST /api/v2/auth/check-password
+ * Requiert authentification
+ */
+const checkPassword = async (req, res) => {
+    try {
+        const { password } = req.body
+
+        if (!password) {
+            return res.status(400).json({
+                success: false,
+                message: 'Mot de passe requis'
+            })
+        }
+
+        // L'exposant est déjà dans req.exposant grâce au middleware requireAuth
+        const isPasswordValid = await req.exposant.comparePassword(password)
+
+        if (!isPasswordValid) {
+            return res.status(401).json({
+                success: false,
+                message: 'Mot de passe incorrect'
+            })
+        }
+
+        res.json({
+            success: true,
+            message: 'Mot de passe correct'
+        })
+    } catch (error) {
+        console.error('Error in checkPassword:', error)
+        res.status(500).json({
+            success: false,
+            message: 'Erreur lors de la vérification du mot de passe',
+            error: error.message
+        })
+    }
+}
+
+/**
+ * Récupérer les informations de l'exposant connecté
+ * GET /api/v2/auth/me
+ * Requiert authentification
+ */
+const getMe = async (req, res) => {
+    try {
+        // L'exposant est déjà dans req.exposant grâce au middleware requireAuth
+        const exposant = await Exposant.findById(req.exposantId)
+            .populate('categorie', 'label color borderColor')
+            .populate('salon', 'nom slug')
+            .select('-password')
+
+        if (!exposant) {
+            return res.status(404).json({
+                success: false,
+                message: 'Exposant non trouvé'
+            })
+        }
+
+        res.json({
+            success: true,
+            data: exposant
+        })
+    } catch (error) {
+        console.error('Error in getMe:', error)
+        res.status(500).json({
+            success: false,
+            message: 'Erreur lors de la récupération des informations',
+            error: error.message
+        })
+    }
+}
+
+/**
+ * Inscription d'un invité (avec compte)
+ * POST /api/v2/auth/invites/register
+ */
+const registerInvite = async (req, res) => {
+    try {
+        const { nom, email, password } = req.body
+
+        // Validation des champs requis
+        if (!nom || !email || !password) {
+            return res.status(400).json({
+                success: false,
+                message: 'Tous les champs requis doivent être fournis (nom, email, password)'
+            })
+        }
+
+        // Validation de l'email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Format d\'email invalide'
+            })
+        }
+
+        // Validation du mot de passe
+        if (password.length < 5 || password.length > 256) {
+            return res.status(400).json({
+                success: false,
+                message: 'Le mot de passe doit contenir entre 5 et 256 caractères'
+            })
+        }
+
+        // Vérifier si l'email existe déjà
+        const existingInvite = await Invite.findOne({ email: email.trim().toLowerCase() })
+        if (existingInvite) {
+            return res.status(400).json({
+                success: false,
+                message: 'Cet email est déjà utilisé'
+            })
+        }
+
+        // Créer le nouvel invité
+        const newInvite = await Invite.create({
+            nom: nom.trim(),
+            email: email.trim().toLowerCase(),
+            password,
+            statut: 1, // Actif par défaut
+            isActive: true
+        })
+
+        // Générer le token JWT
+        const token = generateToken(newInvite._id)
+
+        // Retourner les informations (sans le mot de passe)
+        const inviteData = newInvite.toObject()
+        delete inviteData.password
+
+        res.status(201).json({
+            success: true,
+            message: 'Inscription réussie',
+            data: {
+                token,
+                invite: inviteData
+            }
+        })
+    } catch (error) {
+        console.error('Error in registerInvite:', error)
+        res.status(500).json({
+            success: false,
+            message: 'Erreur lors de l\'inscription',
+            error: error.message
+        })
+    }
+}
+
+/**
+ * Connexion d'un invité (avec compte)
+ * POST /api/v2/auth/invites/login
+ */
+const loginInvite = async (req, res) => {
+    try {
+        const { email, password } = req.body
+
+        // Validation des champs requis
+        if (!email || !password) {
+            return res.status(400).json({
+                success: false,
+                message: 'Email et mot de passe requis'
+            })
+        }
+
+        // Trouver l'invité par email
+        const invite = await Invite.findOne({ email: email.trim().toLowerCase() })
+
+        if (!invite) {
+            return res.status(401).json({
+                success: false,
+                message: 'Email ou mot de passe incorrect'
+            })
+        }
+
+        // Vérifier que l'invité est actif
+        if (invite.statut === 0 || !invite.isActive) {
+            return res.status(403).json({
+                success: false,
+                message: 'Votre compte est désactivé'
+            })
+        }
+
+        // Vérifier le mot de passe
+        const isPasswordValid = await invite.comparePassword(password)
+        if (!isPasswordValid) {
+            return res.status(401).json({
+                success: false,
+                message: 'Email ou mot de passe incorrect'
+            })
+        }
+
+        // Générer le token JWT
+        const token = generateToken(invite._id)
+
+        // Retourner les informations (sans le mot de passe)
+        const inviteData = invite.toObject()
+        delete inviteData.password
+
+        res.json({
+            success: true,
+            message: 'Connexion réussie',
+            data: {
+                token,
+                invite: inviteData
+            }
+        })
+    } catch (error) {
+        console.error('Error in loginInvite:', error)
+        res.status(500).json({
+            success: false,
+            message: 'Erreur lors de la connexion',
+            error: error.message
+        })
+    }
+}
+
+module.exports = {
+    register,
+    login,
+    registerInvite,
+    loginInvite,
+    forgotPassword,
+    checkPassword,
+    getMe
 }
 

@@ -3,363 +3,954 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion des Exposants - Salon Habitat</title>
+    <title>Administration - Dormans API</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/manage/style.css">
 </head>
-<body>
+<body class="bg-gray-50">
     <!-- Login Screen -->
-    <div id="loginScreen" class="screen active">
-        <div class="login-container">
-            <div class="login-card">
-                <h1>🏛️ Administration</h1>
-                <p class="subtitle">Salon Habitat</p>
+    <div id="loginScreen" class="min-h-screen flex items-center justify-center relative overflow-hidden">
+        <!-- Gradient Background with Animation -->
+        <div class="absolute inset-0 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 animate-gradient"></div>
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSIyIi8+PC9nPjwvZz48L3N2Zz4=')] opacity-20"></div>
+        
+        <!-- Login Card -->
+        <div class="relative z-10 w-full max-w-md mx-4">
+            <div class="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-white/20">
+                <!-- Logo & Header -->
+                <div class="text-center mb-8">
+                    <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl mb-6 shadow-lg transform hover:scale-105 transition-transform duration-200">
+                        <i class="fas fa-shield-alt text-white text-3xl"></i>
+                    </div>
+                    <h1 class="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                        Administration
+                    </h1>
+                    <p class="text-gray-600 text-sm font-medium">Dormans API - Gestion Multi-Salons</p>
+                </div>
 
-                <form id="loginForm">
-                    <div class="form-group">
-                        <label for="username">Nom d'utilisateur</label>
-                        <input type="text" id="username" name="username" required autofocus>
+                <!-- Login Form -->
+                <form id="loginForm" class="space-y-5">
+                    <!-- Email Input -->
+                    <div class="space-y-2">
+                        <label for="username" class="block text-sm font-semibold text-gray-700">
+                            <i class="fas fa-envelope mr-2 text-indigo-500"></i>Email
+                        </label>
+                        <div class="relative">
+                            <input 
+                                type="email" 
+                                id="username" 
+                                name="username" 
+                                required 
+                                autofocus
+                                placeholder="admin@dormans.com"
+                                class="w-full px-4 py-3 pl-12 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-gray-50 hover:bg-white focus:bg-white"
+                            >
+                            <div class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="password">Mot de passe</label>
-                        <input type="password" id="password" name="password" required>
+                    <!-- Password Input -->
+                    <div class="space-y-2">
+                        <label for="password" class="block text-sm font-semibold text-gray-700">
+                            <i class="fas fa-lock mr-2 text-indigo-500"></i>Mot de passe
+                        </label>
+                        <div class="relative">
+                            <input 
+                                type="password" 
+                                id="password" 
+                                name="password" 
+                                required
+                                placeholder="••••••••"
+                                class="w-full px-4 py-3 pl-12 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-gray-50 hover:bg-white focus:bg-white"
+                            >
+                            <div class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+                                <i class="fas fa-key"></i>
+                            </div>
+                            <button 
+                                type="button"
+                                id="togglePassword"
+                                class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-indigo-600 transition-colors"
+                            >
+                                <i class="fas fa-eye" id="eyeIcon"></i>
+                            </button>
+                        </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary btn-block">
-                        Connexion
+                    <!-- Remember Me & Forgot Password -->
+                    <div class="flex items-center justify-between text-sm">
+                        <label class="flex items-center cursor-pointer group">
+                            <input type="checkbox" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 cursor-pointer">
+                            <span class="ml-2 text-gray-600 group-hover:text-gray-900 transition-colors">Se souvenir de moi</span>
+                        </label>
+                        <a href="#" class="text-indigo-600 hover:text-indigo-800 font-medium transition-colors">
+                            Mot de passe oublié ?
+                        </a>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button 
+                        type="submit" 
+                        class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3.5 rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2"
+                    >
+                        <span>Se connecter</span>
+                        <i class="fas fa-arrow-right"></i>
                     </button>
 
-                    <div id="loginError" class="error-message" style="display: none;"></div>
+                    <!-- Error Message -->
+                    <div id="loginError" class="hidden bg-red-50 border-2 border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm flex items-center space-x-2 animate-shake">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span id="errorMessage"></span>
+                    </div>
+
+                    <!-- Info Message -->
+                    <div class="mt-4 p-3 bg-indigo-50 border border-indigo-200 rounded-xl text-xs text-indigo-700">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        <span>Utilisez les identifiants configurés dans votre fichier .env</span>
+                    </div>
                 </form>
+            </div>
+
+            <!-- Footer -->
+            <div class="mt-6 text-center text-white/80 text-sm">
+                <p>© 2024 Dormans API. Tous droits réservés.</p>
             </div>
         </div>
     </div>
 
     <!-- Dashboard Screen -->
-    <div id="dashboardScreen" class="screen">
-        <!-- Header -->
-        <header class="dashboard-header">
-            <div class="header-content">
-                <h1>🏛️ Gestion des Exposants</h1>
-                <div class="header-actions">
-                    <span id="adminName" class="admin-name"></span>
-                    <button onclick="logout()" class="btn btn-secondary btn-sm">
-                        Déconnexion
-                    </button>
+    <div id="dashboardScreen" class="hidden min-h-screen">
+        <!-- Sidebar -->
+        <aside class="fixed left-0 top-0 h-full w-64 bg-gray-900 text-white shadow-xl z-50">
+            <div class="p-6 border-b border-gray-800">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-lg">Dormans</h2>
+                        <p class="text-xs text-gray-400">Administration</p>
+                    </div>
                 </div>
             </div>
-        </header>
 
-        <!-- Navigation Tabs -->
-        <nav class="tabs">
-            <button class="tab active" onclick="showTab('stats')">📊 Statistiques</button>
-            <button class="tab" onclick="showTab('list')">📋 Liste</button>
-            <button class="tab" onclick="showTab('create')">➕ Nouveau</button>
-        </nav>
+            <nav class="p-4 space-y-2">
+                <a href="#" data-page="dashboard" class="nav-item active flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition">
+                    <i class="fas fa-chart-line w-5"></i>
+                    <span>Tableau de bord</span>
+                </a>
+                <a href="#" data-page="exposants" class="nav-item flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition">
+                    <i class="fas fa-users w-5"></i>
+                    <span>Exposants</span>
+                </a>
+                <a href="#" data-page="salons" class="nav-item flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition">
+                    <i class="fas fa-building w-5"></i>
+                    <span>Salons</span>
+                </a>
+                <a href="#" data-page="categories" class="nav-item flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition">
+                    <i class="fas fa-tags w-5"></i>
+                    <span>Catégories</span>
+                </a>
+                <a href="#" data-page="events" class="nav-item flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition">
+                    <i class="fas fa-calendar-alt w-5"></i>
+                    <span>Événements</span>
+                </a>
+                <a href="#" data-page="invites" class="nav-item flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition">
+                    <i class="fas fa-user-friends w-5"></i>
+                    <span>Invités</span>
+                </a>
+            </nav>
+
+            <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-800">
+                <div class="flex items-center space-x-3 px-4 py-3">
+                    <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-sm"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium truncate" id="adminName">Admin</p>
+                        <p class="text-xs text-gray-400 truncate">Administrateur</p>
+                    </div>
+                </div>
+                <button onclick="logout()" 
+                    class="w-full mt-2 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-sm font-medium transition">
+                    <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
+                </button>
+            </div>
+        </aside>
 
         <!-- Main Content -->
-        <main class="dashboard-content">
-            <!-- Statistics Tab -->
-            <div id="statsTab" class="tab-content active">
-                <h2>Statistiques Générales</h2>
+        <div class="ml-64">
+            <!-- Top Header -->
+            <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+                <div class="px-6 py-4">
+                    <div class="flex items-center justify-between">
+                        <h1 class="text-2xl font-bold text-gray-900" id="pageTitle">Tableau de bord</h1>
+                        <div class="flex items-center space-x-4">
+                            <button id="mobileMenuBtn" class="lg:hidden p-2 hover:bg-gray-100 rounded-lg">
+                                <i class="fas fa-bars text-gray-600"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
 
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">👥</div>
-                        <div class="stat-info">
-                            <div class="stat-label">Total Exposants</div>
-                            <div class="stat-value" id="totalExposants">-</div>
+            <!-- Page Content -->
+            <main class="p-6">
+                <!-- Dashboard Page -->
+                <div id="page-dashboard" class="page-content">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-600 mb-1">Total Exposants</p>
+                                    <p class="text-3xl font-bold text-gray-900" id="stat-total">-</p>
+                                </div>
+                                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-users text-blue-600"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-600 mb-1">Actifs</p>
+                                    <p class="text-3xl font-bold text-green-600" id="stat-active">-</p>
+                                </div>
+                                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-check-circle text-green-600"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-600 mb-1">Inactifs</p>
+                                    <p class="text-3xl font-bold text-yellow-600" id="stat-inactive">-</p>
+                                </div>
+                                <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-pause-circle text-yellow-600"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-600 mb-1">Administrateurs</p>
+                                    <p class="text-3xl font-bold text-purple-600" id="stat-admin">-</p>
+                                </div>
+                                <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-crown text-purple-600"></i>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="stat-card success">
-                        <div class="stat-icon">✅</div>
-                        <div class="stat-info">
-                            <div class="stat-label">Actifs</div>
-                            <div class="stat-value" id="activeExposants">-</div>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Par Niveau de Validation</h3>
+                            <div id="validationStats" class="space-y-3"></div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Par Catégorie</h3>
+                            <div id="categoryStats" class="space-y-3"></div>
                         </div>
                     </div>
 
-                    <div class="stat-card warning">
-                        <div class="stat-icon">⏸️</div>
-                        <div class="stat-info">
-                            <div class="stat-label">Inactifs</div>
-                            <div class="stat-value" id="inactiveExposants">-</div>
-                        </div>
-                    </div>
-
-                    <div class="stat-card info">
-                        <div class="stat-icon">👑</div>
-                        <div class="stat-info">
-                            <div class="stat-label">Administrateurs</div>
-                            <div class="stat-value" id="adminCount">-</div>
+                    <div class="mt-6 bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Contenus</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="text-center p-4 bg-gray-50 rounded-lg">
+                                <i class="fas fa-video text-2xl text-blue-600 mb-2"></i>
+                                <p class="text-sm text-gray-600">Vidéos</p>
+                                <p class="text-2xl font-bold text-gray-900" id="stat-videos">-</p>
+                            </div>
+                            <div class="text-center p-4 bg-gray-50 rounded-lg">
+                                <i class="fas fa-gift text-2xl text-pink-600 mb-2"></i>
+                                <p class="text-sm text-gray-600">Bondeals</p>
+                                <p class="text-2xl font-bold text-gray-900" id="stat-bondeals">-</p>
+                            </div>
+                            <div class="text-center p-4 bg-gray-50 rounded-lg">
+                                <i class="fas fa-comments text-2xl text-green-600 mb-2"></i>
+                                <p class="text-sm text-gray-600">Commentaires</p>
+                                <p class="text-2xl font-bold text-gray-900" id="stat-comments">-</p>
+                            </div>
+                            <div class="text-center p-4 bg-gray-50 rounded-lg">
+                                <i class="fas fa-heart text-2xl text-red-600 mb-2"></i>
+                                <p class="text-sm text-gray-600">Likes</p>
+                                <p class="text-2xl font-bold text-gray-900" id="stat-likes">-</p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="stats-section">
-                    <h3>Par Niveau de Validation</h3>
-                    <div class="validation-stats" id="validationStats"></div>
+                <!-- Exposants Page -->
+                <div id="page-exposants" class="page-content hidden">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                        <div class="p-6 border-b border-gray-200 flex items-center justify-between">
+                            <h2 class="text-xl font-semibold text-gray-900">Liste des Exposants</h2>
+                            <button onclick="openCreateExposantModal()" 
+                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
+                                <i class="fas fa-plus mr-2"></i>Nouveau
+                            </button>
+                        </div>
+
+                        <div class="p-6">
+                            <div class="flex flex-col md:flex-row gap-4 mb-6">
+                                <input type="text" id="searchInput" placeholder="Rechercher..." 
+                                    class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <select id="filterValid" 
+                                    class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <option value="">Tous les niveaux</option>
+                                    <option value="0">Simple exposant</option>
+                                    <option value="1">Validé sans publication</option>
+                                    <option value="2">Validé avec publication</option>
+                                    <option value="3">Administrateur</option>
+                                </select>
+                                <select id="filterStatus" 
+                                    class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <option value="">Tous les statuts</option>
+                                    <option value="1">Actif</option>
+                                    <option value="0">Inactif</option>
+                                </select>
+                            </div>
+
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Catégorie</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Salon</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Validation</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="exposantsTable" class="bg-white divide-y divide-gray-200">
+                                        <tr>
+                                            <td colspan="7" class="px-4 py-8 text-center text-gray-500">Chargement...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div id="pagination" class="mt-6 flex justify-center"></div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="stats-section">
-                    <h3>Par Catégorie</h3>
-                    <div class="category-stats" id="categoryStats"></div>
-                </div>
-
-                <div class="stats-section">
-                    <h3>Contenus</h3>
-                    <div class="content-stats">
-                        <div class="content-stat">
-                            <span class="content-icon">🎥</span>
-                            <span class="content-label">Vidéos:</span>
-                            <span class="content-value" id="videoCount">-</span>
+                <!-- Salons Page -->
+                <div id="page-salons" class="page-content hidden">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                        <div class="p-6 border-b border-gray-200 flex items-center justify-between">
+                            <h2 class="text-xl font-semibold text-gray-900">Gestion des Salons</h2>
+                            <button onclick="openCreateSalonModal()" 
+                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
+                                <i class="fas fa-plus mr-2"></i>Nouveau Salon
+                            </button>
                         </div>
-                        <div class="content-stat">
-                            <span class="content-icon">🎁</span>
-                            <span class="content-label">Bondeals:</span>
-                            <span class="content-value" id="bondealCount">-</span>
-                        </div>
-                        <div class="content-stat">
-                            <span class="content-icon">💬</span>
-                            <span class="content-label">Commentaires:</span>
-                            <span class="content-value" id="commentCount">-</span>
-                        </div>
-                        <div class="content-stat">
-                            <span class="content-icon">❤️</span>
-                            <span class="content-label">Likes:</span>
-                            <span class="content-value" id="likeCount">-</span>
+                        <div class="p-6">
+                            <div id="salonsList" class="space-y-4"></div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- List Tab -->
-            <div id="listTab" class="tab-content">
-                <div class="list-header">
-                    <h2>Liste des Exposants</h2>
-                    <button onclick="loadExposants()" class="btn btn-secondary btn-sm">
-                        🔄 Actualiser
-                    </button>
+                <!-- Catégories Page -->
+                <div id="page-categories" class="page-content hidden">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                        <div class="p-6 border-b border-gray-200">
+                            <div class="flex items-center justify-between mb-4">
+                                <h2 class="text-xl font-semibold text-gray-900">Gestion des Catégories</h2>
+                                <button onclick="openCreateCategoryModal()" 
+                                    class="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition font-medium shadow-lg hover:shadow-xl">
+                                    <i class="fas fa-plus mr-2"></i>Nouvelle Catégorie
+                                </button>
+                            </div>
+                            <!-- Filter by Salon -->
+                            <div class="flex items-center space-x-4">
+                                <label class="text-sm font-medium text-gray-700">Filtrer par salon:</label>
+                                <select id="categorySalonFilter" 
+                                    class="px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition bg-white">
+                                    <option value="">Tous les salons</option>
+                                </select>
+                                <button onclick="loadCategoriesList()" 
+                                    class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition text-sm font-medium">
+                                    <i class="fas fa-sync-alt mr-2"></i>Actualiser
+                                </button>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div id="categoriesList" class="space-y-6"></div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Filters -->
-                <div class="filters">
-                    <input type="text" id="searchInput" placeholder="🔍 Rechercher (nom, email, username)..." onkeyup="applyFilters()">
-
-                    <select id="filterValid" onchange="applyFilters()">
-                        <option value="">Tous les niveaux</option>
-                        <option value="0">Simple exposant</option>
-                        <option value="1">Validé sans publication</option>
-                        <option value="2">Validé avec publication</option>
-                        <option value="3">Administrateur</option>
-                    </select>
-
-                    <select id="filterStatus" onchange="applyFilters()">
-                        <option value="">Tous les statuts</option>
-                        <option value="1">Actif</option>
-                        <option value="0">Inactif</option>
-                    </select>
+                <!-- Événements Page -->
+                <div id="page-events" class="page-content hidden">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                        <div class="p-6 border-b border-gray-200 flex items-center justify-between">
+                            <h2 class="text-xl font-semibold text-gray-900">Gestion des Événements</h2>
+                            <button onclick="openCreateEventModal()" 
+                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
+                                <i class="fas fa-plus mr-2"></i>Nouvel Événement
+                            </button>
+                        </div>
+                        <div class="p-6">
+                            <div id="eventsList" class="space-y-4"></div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Table -->
-                <div class="table-container">
-                    <table class="exposants-table">
-                        <thead>
-                            <tr>
-                                <th>Nom</th>
-                                <th>Email</th>
-                                <th>Catégorie</th>
-                                <th>Validation</th>
-                                <th>Statut</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="exposantsTable">
-                            <tr>
-                                <td colspan="6" class="loading">Chargement...</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <!-- Invités Page -->
+                <div id="page-invites" class="page-content hidden">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                        <div class="p-6 border-b border-gray-200 flex items-center justify-between">
+                            <h2 class="text-xl font-semibold text-gray-900">Gestion des Invités</h2>
+                            <button onclick="openCreateInviteModal()" 
+                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
+                                <i class="fas fa-plus mr-2"></i>Nouvel Invité
+                            </button>
+                        </div>
+
+                        <div class="p-6">
+                            <div class="flex flex-col md:flex-row gap-4 mb-6">
+                                <input type="text" id="inviteSearchInput" placeholder="Rechercher..." 
+                                    class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <select id="inviteFilterStatus" 
+                                    class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <option value="">Tous les statuts</option>
+                                    <option value="1">Actif</option>
+                                    <option value="0">Inactif</option>
+                                </select>
+                            </div>
+
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date création</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="invitesTable" class="bg-white divide-y divide-gray-200">
+                                        <tr>
+                                            <td colspan="5" class="px-4 py-8 text-center text-gray-500">Chargement...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div id="invitePagination" class="mt-6 flex justify-center"></div>
+                        </div>
+                    </div>
                 </div>
-
-                <!-- Pagination -->
-                <div class="pagination" id="pagination"></div>
-            </div>
-
-            <!-- Create Tab -->
-            <div id="createTab" class="tab-content">
-                <h2>Créer un Nouvel Exposant</h2>
-
-                <form id="createForm" class="exposant-form">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="createNom">Nom *</label>
-                            <input type="text" id="createNom" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="createUsername">Username *</label>
-                            <input type="text" id="createUsername" required>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="createEmail">Email *</label>
-                            <input type="email" id="createEmail" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="createPassword">Mot de passe *</label>
-                            <input type="password" id="createPassword" required>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="createCategorie">Catégorie *</label>
-                            <select id="createCategorie" required>
-                                <option value="">Sélectionner...</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="createLocation">Localisation *</label>
-                            <input type="text" id="createLocation" required>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="createBio">Bio / Description *</label>
-                        <textarea id="createBio" rows="3" required></textarea>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="createPhone">Téléphone</label>
-                            <input type="tel" id="createPhone">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="createWeblink">Site Web</label>
-                            <input type="url" id="createWeblink">
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="createLinkedin">LinkedIn</label>
-                            <input type="url" id="createLinkedin">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="createFacebook">Facebook</label>
-                            <input type="url" id="createFacebook">
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="createInstagram">Instagram</label>
-                            <input type="url" id="createInstagram">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="createIsValid">Niveau de validation</label>
-                            <select id="createIsValid">
-                                <option value="0">Simple exposant</option>
-                                <option value="1">Validé sans publication</option>
-                                <option value="2" selected>Validé avec publication</option>
-                                <option value="3">Administrateur</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">
-                            Créer l'Exposant
-                        </button>
-                        <button type="reset" class="btn btn-secondary">
-                            Réinitialiser
-                        </button>
-                    </div>
-
-                    <div id="createMessage" class="message" style="display: none;"></div>
-                </form>
-            </div>
-        </main>
+            </main>
+        </div>
     </div>
 
-    <!-- Modal for Edit -->
-    <div id="editModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Modifier l'Exposant</h2>
-                <button class="modal-close" onclick="closeEditModal()">&times;</button>
+    <!-- Create Category Modal -->
+    <div id="createCategoryModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white">
+                <h2 class="text-xl font-semibold text-gray-900">Nouvelle Catégorie</h2>
+                <button onclick="closeCreateCategoryModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-            <form id="editForm" class="exposant-form">
-                <input type="hidden" id="editId">
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="editNom">Nom</label>
-                        <input type="text" id="editNom">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="editEmail">Email</label>
-                        <input type="email" id="editEmail">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="editLocation">Localisation</label>
-                    <input type="text" id="editLocation">
-                </div>
-
-                <div class="form-group">
-                    <label for="editBio">Bio</label>
-                    <textarea id="editBio" rows="3"></textarea>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="editPhone">Téléphone</label>
-                        <input type="tel" id="editPhone">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="editIsValid">Niveau de validation</label>
-                        <select id="editIsValid">
-                            <option value="0">Simple exposant</option>
-                            <option value="1">Validé sans publication</option>
-                            <option value="2">Validé avec publication</option>
-                            <option value="3">Administrateur</option>
+            <form id="createCategoryForm" class="p-6">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Salon *</label>
+                        <select id="createCategorySalon" required
+                            class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="">Sélectionner un salon...</option>
                         </select>
                     </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Label *</label>
+                        <input type="text" id="createCategoryLabel" required maxlength="100"
+                            placeholder="Ex: Architecture, Construction..."
+                            class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Couleur *</label>
+                            <div class="flex items-center space-x-2">
+                                <input type="color" id="createCategoryColor" value="#3B82F6" required
+                                    class="w-16 h-10 border-2 border-gray-200 rounded-lg cursor-pointer">
+                                <input type="text" id="createCategoryColorHex" value="#3B82F6" required maxlength="7"
+                                    pattern="^#[0-9A-Fa-f]{6}$"
+                                    placeholder="#3B82F6"
+                                    class="flex-1 px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Couleur bordure *</label>
+                            <div class="flex items-center space-x-2">
+                                <input type="color" id="createCategoryBorderColor" value="#1E40AF" required
+                                    class="w-16 h-10 border-2 border-gray-200 rounded-lg cursor-pointer">
+                                <input type="text" id="createCategoryBorderColorHex" value="#1E40AF" required maxlength="7"
+                                    pattern="^#[0-9A-Fa-f]{6}$"
+                                    placeholder="#1E40AF"
+                                    class="flex-1 px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                <div class="mt-6 flex justify-end space-x-3">
+                    <button type="button" onclick="closeCreateCategoryModal()" 
+                        class="px-4 py-2 border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition font-medium">
+                        Annuler
+                    </button>
+                    <button type="submit" 
+                        class="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition font-medium shadow-lg">
+                        Créer
+                    </button>
+                </div>
+                <div id="createCategoryMessage" class="hidden mt-4"></div>
+            </form>
+        </div>
+    </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="editStatut">Statut</label>
-                        <select id="editStatut">
+    <!-- Create Event Modal -->
+    <div id="createEventModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white">
+                <h2 class="text-xl font-semibold text-gray-900">Nouvel Événement</h2>
+                <button onclick="closeCreateEventModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="createEventForm" class="p-6">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Titre *</label>
+                        <input type="text" id="createEventTitre" required maxlength="100"
+                            placeholder="Ex: Conférence sur l'architecture..."
+                            class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Description *</label>
+                        <textarea id="createEventDescription" required maxlength="500" rows="4"
+                            placeholder="Description de l'événement..."
+                            class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                        <p class="text-xs text-gray-500 mt-1"><span id="createEventDescriptionCount">0</span>/500 caractères</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Date *</label>
+                            <input type="date" id="createEventDate" required
+                                class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Heure *</label>
+                            <input type="time" id="createEventTime" required
+                                class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Statut</label>
+                        <select id="createEventStatut"
+                            class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                             <option value="1">Actif</option>
                             <option value="0">Inactif</option>
                         </select>
                     </div>
                 </div>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">
-                        Enregistrer
-                    </button>
-                    <button type="button" class="btn btn-secondary" onclick="closeEditModal()">
+                <div class="mt-6 flex justify-end space-x-3">
+                    <button type="button" onclick="closeCreateEventModal()" 
+                        class="px-4 py-2 border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition font-medium">
                         Annuler
                     </button>
+                    <button type="submit" 
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
+                        Créer
+                    </button>
+                </div>
+                <div id="createEventMessage" class="hidden mt-4"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Event Modal -->
+    <div id="editEventModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white">
+                <h2 class="text-xl font-semibold text-gray-900">Modifier l'Événement</h2>
+                <button onclick="closeEditEventModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="editEventForm" class="p-6">
+                <input type="hidden" id="editEventId">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Titre *</label>
+                        <input type="text" id="editEventTitre" required maxlength="100"
+                            class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Description *</label>
+                        <textarea id="editEventDescription" required maxlength="500" rows="4"
+                            class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                        <p class="text-xs text-gray-500 mt-1"><span id="editEventDescriptionCount">0</span>/500 caractères</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Date *</label>
+                            <input type="date" id="editEventDate" required
+                                class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Heure *</label>
+                            <input type="time" id="editEventTime" required
+                                class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Statut</label>
+                        <select id="editEventStatut"
+                            class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="1">Actif</option>
+                            <option value="0">Inactif</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end space-x-3">
+                    <button type="button" onclick="closeEditEventModal()" 
+                        class="px-4 py-2 border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition font-medium">
+                        Annuler
+                    </button>
+                    <button type="submit" 
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
+                        Enregistrer
+                    </button>
+                </div>
+                <div id="editEventMessage" class="hidden mt-4"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Create Salon Modal -->
+    <div id="createSalonModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white">
+                <h2 class="text-xl font-semibold text-gray-900">Nouveau Salon</h2>
+                <button onclick="closeCreateSalonModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="createSalonForm" class="p-6">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Nom *</label>
+                        <input type="text" id="createSalonNom" required maxlength="100"
+                            placeholder="Ex: Salon de l'habitat"
+                            class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Description</label>
+                        <textarea id="createSalonDescription" maxlength="500" rows="4"
+                            placeholder="Description du salon..."
+                            class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                        <p class="text-xs text-gray-500 mt-1"><span id="createSalonDescriptionCount">0</span>/500 caractères</p>
+                    </div>
+                    <div>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" id="createSalonIsActive" 
+                                class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            <span class="text-sm font-medium text-gray-700">Activer ce salon (désactivera les autres)</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end space-x-3">
+                    <button type="button" onclick="closeCreateSalonModal()" 
+                        class="px-4 py-2 border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition font-medium">
+                        Annuler
+                    </button>
+                    <button type="submit" 
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
+                        Créer
+                    </button>
+                </div>
+                <div id="createSalonMessage" class="hidden mt-4"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Salon Modal -->
+    <div id="editSalonModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white">
+                <h2 class="text-xl font-semibold text-gray-900">Modifier le Salon</h2>
+                <button onclick="closeEditSalonModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="editSalonForm" class="p-6">
+                <input type="hidden" id="editSalonId">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Nom *</label>
+                        <input type="text" id="editSalonNom" required maxlength="100"
+                            class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Description</label>
+                        <textarea id="editSalonDescription" maxlength="500" rows="4"
+                            class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                        <p class="text-xs text-gray-500 mt-1"><span id="editSalonDescriptionCount">0</span>/500 caractères</p>
+                    </div>
+                    <div>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" id="editSalonIsActive" 
+                                class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            <span class="text-sm font-medium text-gray-700">Activer ce salon (désactivera les autres)</span>
+                        </label>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Statut</label>
+                        <select id="editSalonStatut"
+                            class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="1">Actif</option>
+                            <option value="0">Inactif</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end space-x-3">
+                    <button type="button" onclick="closeEditSalonModal()" 
+                        class="px-4 py-2 border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition font-medium">
+                        Annuler
+                    </button>
+                    <button type="submit" 
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
+                        Enregistrer
+                    </button>
+                </div>
+                <div id="editSalonMessage" class="hidden mt-4"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Create Invite Modal -->
+    <div id="createInviteModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white">
+                <h2 class="text-xl font-semibold text-gray-900">Nouvel Invité</h2>
+                <button onclick="closeCreateInviteModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="createInviteForm" class="p-6">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Nom *</label>
+                        <input type="text" id="createInviteNom" required maxlength="100"
+                            placeholder="Ex: Jean Dupont"
+                            class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
+                        <input type="email" id="createInviteEmail" required maxlength="256"
+                            placeholder="Ex: jean.dupont@example.com"
+                            class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Mot de passe *</label>
+                        <input type="password" id="createInvitePassword" required minlength="5" maxlength="256"
+                            placeholder="Minimum 5 caractères"
+                            class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Statut</label>
+                        <select id="createInviteStatut"
+                            class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="1">Actif</option>
+                            <option value="0">Inactif</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end space-x-3">
+                    <button type="button" onclick="closeCreateInviteModal()" 
+                        class="px-4 py-2 border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition font-medium">
+                        Annuler
+                    </button>
+                    <button type="submit" 
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
+                        Créer
+                    </button>
+                </div>
+                <div id="createInviteMessage" class="hidden mt-4"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Invite Modal -->
+    <div id="editInviteModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white">
+                <h2 class="text-xl font-semibold text-gray-900">Modifier l'Invité</h2>
+                <button onclick="closeEditInviteModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="editInviteForm" class="p-6">
+                <input type="hidden" id="editInviteId">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Nom *</label>
+                        <input type="text" id="editInviteNom" required maxlength="100"
+                            class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
+                        <input type="email" id="editInviteEmail" required maxlength="256"
+                            class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Nouveau mot de passe (laisser vide pour ne pas changer)</label>
+                        <input type="password" id="editInvitePassword" minlength="5" maxlength="256"
+                            placeholder="Laisser vide pour ne pas changer"
+                            class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Statut</label>
+                        <select id="editInviteStatut"
+                            class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="1">Actif</option>
+                            <option value="0">Inactif</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end space-x-3">
+                    <button type="button" onclick="closeEditInviteModal()" 
+                        class="px-4 py-2 border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition font-medium">
+                        Annuler
+                    </button>
+                    <button type="submit" 
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
+                        Enregistrer
+                    </button>
+                </div>
+                <div id="editInviteMessage" class="hidden mt-4"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Exposant Details Modal -->
+    <div id="exposantDetailsModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white">
+                <h2 class="text-xl font-semibold text-gray-900" id="exposantDetailsTitle">Détails de l'exposant</h2>
+                <button onclick="closeExposantDetailsModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <!-- Informations de l'exposant -->
+                <div id="exposantDetailsInfo" class="mb-6"></div>
+
+                <!-- Onglets -->
+                <div class="border-b border-gray-200 mb-6">
+                    <div class="flex space-x-4">
+                        <button onclick="switchExposantTab('videos')" class="exposant-tab-btn active px-4 py-2 text-sm font-medium text-gray-700 border-b-2 border-blue-600" data-tab="videos">
+                            <i class="fas fa-video mr-2"></i>Vidéos (<span id="videosCount">0</span>)
+                        </button>
+                        <button onclick="switchExposantTab('bondeals')" class="exposant-tab-btn px-4 py-2 text-sm font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-700" data-tab="bondeals">
+                            <i class="fas fa-gift mr-2"></i>Bon Deals (<span id="bondealsCount">0</span>)
+                        </button>
+                        <button onclick="switchExposantTab('qrcode')" class="exposant-tab-btn px-4 py-2 text-sm font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-700" data-tab="qrcode">
+                            <i class="fas fa-qrcode mr-2"></i>QR Code
+                        </button>
+                    </div>
                 </div>
 
-                <div id="editMessage" class="message" style="display: none;"></div>
+                <!-- Contenu des onglets -->
+                <div id="exposantVideosTab" class="exposant-tab-content">
+                    <div id="exposantVideosList" class="space-y-4">
+                        <p class="text-gray-500 text-center py-8">Chargement...</p>
+                    </div>
+                </div>
+
+                <div id="exposantBondealsTab" class="exposant-tab-content hidden">
+                    <div id="exposantBondealsList" class="space-y-4">
+                        <p class="text-gray-500 text-center py-8">Chargement...</p>
+                    </div>
+                </div>
+
+                <div id="exposantQRCodeTab" class="exposant-tab-content hidden">
+                    <div id="exposantQRCodeContent" class="space-y-4">
+                        <p class="text-gray-500 text-center py-8">Chargement...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="editExposantModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white">
+                <h2 class="text-xl font-semibold text-gray-900">Modifier l'Exposant</h2>
+                <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="editForm" class="p-6">
+                <input type="hidden" id="editId">
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Nom</label>
+                            <input type="text" id="editNom" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                            <input type="email" id="editEmail" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Localisation</label>
+                        <input type="text" id="editLocation" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Bio</label>
+                        <textarea id="editBio" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Niveau de validation</label>
+                            <select id="editIsValid" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option value="0">Simple exposant</option>
+                                <option value="1">Validé sans publication</option>
+                                <option value="2">Validé avec publication</option>
+                                <option value="3">Administrateur</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Statut</label>
+                            <select id="editStatut" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option value="1">Actif</option>
+                                <option value="0">Inactif</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end space-x-3">
+                    <button type="button" onclick="closeEditModal()" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">Annuler</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Enregistrer</button>
+                </div>
+                <div id="editMessage" class="hidden mt-4"></div>
             </form>
         </div>
     </div>
