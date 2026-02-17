@@ -317,13 +317,58 @@ const updateInviteStatus = async (req, res) => {
     }
 }
 
+/**
+ * Supprimer son propre compte invité (self-delete)
+ * DELETE /api/v2/auth/invites/account
+ * Requiert authentification
+ */
+const deleteInviteAccount = async (req, res) => {
+    try {
+        const { password } = req.body
+
+        if (!password) {
+            return res.status(400).json({
+                success: false,
+                message: 'Mot de passe requis pour confirmer la suppression'
+            })
+        }
+
+        // Vérifier le mot de passe
+        const isPasswordValid = await req.invite.comparePassword(password)
+        if (!isPasswordValid) {
+            return res.status(401).json({
+                success: false,
+                message: 'Mot de passe incorrect'
+            })
+        }
+
+        // Soft delete : mettre statut à 0 et isActive à false
+        req.invite.statut = 0
+        req.invite.isActive = false
+        await req.invite.save()
+
+        res.json({
+            success: true,
+            message: 'Compte supprimé avec succès'
+        })
+    } catch (error) {
+        console.error('Error deleting invite account:', error)
+        res.status(500).json({
+            success: false,
+            message: 'Erreur lors de la suppression du compte',
+            error: error.message
+        })
+    }
+}
+
 module.exports = {
     getAllInvites,
     getInviteById,
     createInvite,
     updateInvite,
     deleteInvite,
-    updateInviteStatus
+    updateInviteStatus,
+    deleteInviteAccount
 }
 
 

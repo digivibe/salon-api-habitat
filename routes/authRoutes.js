@@ -9,6 +9,7 @@ const {
     checkPassword,
     getMe
 } = require('../controllers/authController')
+const { deleteInviteAccount } = require('../controllers/inviteController')
 const { requireAuth } = require('../middlewares/auth')
 
 // Routes publiques pour Exposants
@@ -25,6 +26,7 @@ router.post('/forgot-password', forgotPassword)
 // Routes protégées (authentification requise)
 router.get('/me', requireAuth, getMe)
 router.post('/check-password', requireAuth, checkPassword)
+router.delete('/invites/account', requireAuth, deleteInviteAccount)
 
 module.exports = router
 
