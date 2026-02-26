@@ -17,7 +17,12 @@ const getVersion = async (req, res) => {
             data: {
                 versionCode: parseInt(process.env.VERSION_CODE) || 1,
                 version: '2.0.0',
-                api: 'v2'
+                api: 'v2',
+                minAppVersion: process.env.MIN_APP_VERSION || null,
+                storeUrls: {
+                    ios: process.env.STORE_URL_IOS || null,
+                    android: process.env.STORE_URL_ANDROID || null
+                }
             }
         })
     } catch (error) {
