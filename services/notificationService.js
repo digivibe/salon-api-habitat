@@ -10,10 +10,10 @@ const expo = new Expo()
  * @param {String} body - Corps de la notification
  * @param {Object} data - Données supplémentaires
  * @param {String} salonId - ID du salon (optionnel, pour filtrer par salon actuel du device)
- * @param {String} category - Catégorie de notification (general, promotions, updates, appUpdates, salonChanges, events)
+ * @param {String} category - Catégorie de notification (appUpdates, salonChanges, events)
  * Note: Les notifications sont liées aux devices, pas aux utilisateurs
  */
-const notifyAllUsers = async (title, body, data = {}, salonId = null, category = 'general') => {
+const notifyAllUsers = async (title, body, data = {}, salonId = null, category = 'appUpdates') => {
     try {
         // Construire la requête
         const query = { isActive: true, 'preferences.enabled': true }
@@ -79,7 +79,24 @@ const notifyAllUsers = async (title, body, data = {}, salonId = null, category =
                 const ticketChunk = await expo.sendPushNotificationsAsync(chunk)
                 tickets.push(...ticketChunk)
             } catch (error) {
-                console.error('Erreur lors de l\'envoi d\'un chunk:', error)
+                // Expo refuse un chunk qui mélange plusieurs projets (experience IDs)
+                // → re-envoyer un sous-chunk par projet
+                if (error.code === 'PUSH_TOO_MANY_EXPERIENCE_IDS' && error.details) {
+                    for (const [experienceId, tokenList] of Object.entries(error.details)) {
+                        const tokenSet = new Set(tokenList)
+                        const subChunk = chunk.filter(msg => tokenSet.has(msg.to))
+                        if (subChunk.length === 0) continue
+                        try {
+                            const subTickets = await expo.sendPushNotificationsAsync(subChunk)
+                            tickets.push(...subTickets)
+                            console.log(`✅ Sous-chunk [${experienceId}] : ${subTickets.length} envoyé(s)`)
+                        } catch (subError) {
+                            console.error(`❌ Erreur sous-chunk [${experienceId}]:`, subError.message)
+                        }
+                    }
+                } else {
+                    console.error('Erreur lors de l\'envoi d\'un chunk:', error)
+                }
             }
         }
 
@@ -96,9 +113,9 @@ const notifyAllUsers = async (title, body, data = {}, salonId = null, category =
  * @param {String} title - Titre de la notification
  * @param {String} body - Corps de la notification
  * @param {Object} data - Données supplémentaires
- * @param {String} category - Catégorie de notification (general, promotions, updates, appUpdates, salonChanges, events)
+ * @param {String} category - Catégorie de notification (appUpdates, salonChanges, events)
  */
-const notifyUser = async (userId, title, body, data = {}, category = 'general') => {
+const notifyUser = async (userId, title, body, data = {}, category = 'appUpdates') => {
     try {
         const user = await User.findOne({ userId, isActive: true, 'preferences.enabled': true })
 

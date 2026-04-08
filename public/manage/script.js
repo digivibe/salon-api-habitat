@@ -257,7 +257,8 @@ function navigateToPage(pageName) {
         salons: 'Salons',
         categories: 'Catégories',
         events: 'Événements',
-        invites: 'Invités'
+        invites: 'Invités',
+        notifications: 'Notifications Push'
     };
     const pageTitle = document.getElementById('pageTitle');
     if (pageTitle) {
@@ -283,6 +284,9 @@ function navigateToPage(pageName) {
             break;
         case 'invites':
             loadInvitesList();
+            break;
+        case 'notifications':
+            loadNotificationStats();
             break;
     }
 }
@@ -2375,5 +2379,159 @@ async function confirmDeleteInvite(inviteId, inviteName) {
     } catch (error) {
         console.error('Error deleting invite:', error);
         alert('Erreur lors de la suppression: ' + error.message);
+    }
+}
+
+
+// ─────────────────────────────────────────
+// NOTIFICATIONS
+// ─────────────────────────────────────────
+
+const NOTIF_TEMPLATES = {
+    update: {
+        title: '🚀 Mise à jour disponible',
+        body: 'Une nouvelle version de l\'application est disponible. Mettez à jour pour profiter des dernières améliorations !',
+        category: 'appUpdates',
+        data: { action: 'app_update' }
+    },
+    salon: {
+        title: '🏛️ Nouveau salon actif',
+        body: 'Un nouveau salon vient d\'être activé. Découvrez les exposants et événements disponibles !',
+        category: 'salonChanges',
+        data: { action: 'switch_salon' }
+    },
+    event: {
+        title: '📅 Nouvel événement',
+        body: 'Un nouvel événement vient d\'être publié. Consultez le programme pour ne rien manquer !',
+        category: 'events',
+        data: { action: 'new_event' }
+    },
+    custom: {
+        title: '',
+        body: '',
+        category: 'appUpdates',
+        data: {}
+    }
+};
+
+async function loadNotificationStats() {
+    try {
+        const res = await apiRequest(`${API_BASE}/notifications/stats`);
+        if (res && res.data) {
+            document.getElementById('notif-stat-total').textContent = res.data.totalDevices ?? '-';
+            document.getElementById('notif-stat-active').textContent = res.data.activeDevices ?? '-';
+            const platforms = (res.data.platformStats || [])
+                .map(p => `${p._id}: ${p.count}`)
+                .join('  ·  ');
+            document.getElementById('notif-stat-platforms').textContent = platforms || '-';
+        }
+    } catch (e) {
+        console.error('Erreur stats notifications:', e);
+    }
+}
+
+function openNotificationModal(template = null) {
+    // Remplir le select salons
+    const notifSalonSelect = document.getElementById('notifSalon');
+    notifSalonSelect.innerHTML = '<option value="">Tous les salons</option>';
+    salons.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s._id;
+        opt.textContent = s.nom;
+        notifSalonSelect.appendChild(opt);
+    });
+
+    // Compteur body
+    const bodyArea = document.getElementById('notifBody');
+    bodyArea.addEventListener('input', () => {
+        document.getElementById('notifBodyCount').textContent = bodyArea.value.length;
+    });
+
+    // Appliquer le template si fourni
+    if (template) {
+        applyNotifTemplate(template);
+    } else {
+        applyNotifTemplate('update');
+    }
+
+    // Réinitialiser résultat
+    const result = document.getElementById('notifResult');
+    result.className = 'hidden rounded-lg p-4 text-sm font-medium';
+    result.textContent = '';
+
+    document.getElementById('notificationModal').classList.remove('hidden');
+}
+
+function closeNotificationModal() {
+    document.getElementById('notificationModal').classList.add('hidden');
+}
+
+function applyNotifTemplate(key) {
+    const tpl = NOTIF_TEMPLATES[key];
+    if (!tpl) return;
+
+    document.getElementById('notifTitle').value = tpl.title;
+    document.getElementById('notifBody').value = tpl.body;
+    document.getElementById('notifBodyCount').textContent = tpl.body.length;
+    document.getElementById('notifCategory').value = tpl.category;
+
+    // Highlight le bouton actif
+    document.querySelectorAll('.notif-tpl-btn').forEach(btn => {
+        btn.classList.remove('border-indigo-500', 'bg-indigo-50', 'border-purple-500', 'bg-purple-50',
+            'border-green-500', 'bg-green-50', 'border-gray-500', 'bg-gray-100');
+    });
+    const activeBtn = document.getElementById(`tpl-${key}`);
+    if (activeBtn) {
+        const colorMap = {
+            update: ['border-indigo-500', 'bg-indigo-50'],
+            salon:  ['border-purple-500', 'bg-purple-50'],
+            event:  ['border-green-500',  'bg-green-50'],
+            custom: ['border-gray-500',   'bg-gray-100']
+        };
+        (colorMap[key] || []).forEach(cls => activeBtn.classList.add(cls));
+    }
+}
+
+async function sendNotification() {
+    const title    = document.getElementById('notifTitle').value.trim();
+    const body     = document.getElementById('notifBody').value.trim();
+    const category = document.getElementById('notifCategory').value;
+    const salon    = document.getElementById('notifSalon').value || null;
+
+    const result = document.getElementById('notifResult');
+    const sendBtn  = document.getElementById('notifSendBtn');
+    const sendLabel = document.getElementById('notifSendLabel');
+
+    if (!title || !body) {
+        result.className = 'rounded-lg p-4 text-sm font-medium bg-red-50 text-red-700 border border-red-200';
+        result.textContent = 'Le titre et le message sont obligatoires.';
+        return;
+    }
+
+    // État chargement
+    sendBtn.disabled = true;
+    sendLabel.textContent = 'Envoi en cours...';
+    sendBtn.classList.add('opacity-75');
+    result.className = 'hidden';
+
+    try {
+        const payload = { title, body, category };
+        if (salon) payload.salon = salon;
+
+        const res = await apiRequest(`${API_BASE}/notifications/send-to-all`, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+
+        const count = res?.data?.totalSent ?? '?';
+        result.className = 'rounded-lg p-4 text-sm font-medium bg-green-50 text-green-700 border border-green-200';
+        result.textContent = `✅ Notification envoyée à ${count} device(s) avec succès.`;
+    } catch (e) {
+        result.className = 'rounded-lg p-4 text-sm font-medium bg-red-50 text-red-700 border border-red-200';
+        result.textContent = `❌ Erreur : ${e.message || 'Une erreur est survenue.'}`;
+    } finally {
+        sendBtn.disabled = false;
+        sendLabel.textContent = 'Envoyer';
+        sendBtn.classList.remove('opacity-75');
     }
 }

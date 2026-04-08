@@ -109,7 +109,7 @@ const sendNotificationToUser = async (req, res) => {
             })
         }
 
-        const ticket = await notifyUser(userId, title, body, data || {}, category || 'general')
+        const ticket = await notifyUser(userId, title, body, data || {}, category || 'appUpdates')
 
         res.status(200).json({
             success: true,
@@ -142,7 +142,7 @@ const sendNotificationToAll = async (req, res) => {
             })
         }
 
-        const tickets = await notifyAllUsers(title, body, data || {}, salon || null, category || 'general')
+        const tickets = await notifyAllUsers(title, body, data || {}, salon || null, category || 'appUpdates')
 
         res.status(200).json({
             success: true,
@@ -262,8 +262,6 @@ const getPreferences = async (req, res) => {
         const defaultPreferences = {
             enabled: true,
             categories: {
-                general: true,
-                updates: true,
                 appUpdates: true,
                 salonChanges: true,
                 events: true
@@ -367,12 +365,6 @@ const updatePreferences = async (req, res) => {
         }
 
         if (preferences.categories) {
-            if (preferences.categories.general !== undefined) {
-                user.preferences.categories.general = preferences.categories.general
-            }
-            if (preferences.categories.updates !== undefined) {
-                user.preferences.categories.updates = preferences.categories.updates
-            }
             if (preferences.categories.appUpdates !== undefined) {
                 user.preferences.categories.appUpdates = preferences.categories.appUpdates
             }

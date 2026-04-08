@@ -52,18 +52,6 @@ const userSchema = new mongoose.Schema({
             default: true
         },
         categories: {
-            general: {
-                type: Boolean,
-                default: true
-            },
-            promotions: {
-                type: Boolean,
-                default: true
-            },
-            updates: {
-                type: Boolean,
-                default: true
-            },
             appUpdates: {
                 type: Boolean,
                 default: true,
