@@ -258,7 +258,8 @@ function navigateToPage(pageName) {
         categories: 'Catégories',
         events: 'Événements',
         invites: 'Invités',
-        notifications: 'Notifications Push'
+        notifications: 'Notifications Push',
+        features: 'Fonctionnalités'
     };
     const pageTitle = document.getElementById('pageTitle');
     if (pageTitle) {
@@ -288,7 +289,103 @@ function navigateToPage(pageName) {
         case 'notifications':
             loadNotificationStats();
             break;
+        case 'features':
+            loadFeaturesList();
+            break;
     }
+}
+
+// ==================== Fonctionnalités (feature flags) ====================
+
+async function loadFeaturesList() {
+    const container = document.getElementById('featuresList');
+    if (!container) return;
+
+    container.innerHTML = `
+        <div class="text-center py-8 text-gray-400">
+            <i class="fas fa-spinner fa-spin text-2xl"></i>
+        </div>`;
+
+    try {
+        const data = await apiRequest(`${ADMIN_API_BASE}/features`);
+        renderFeatures(data.data || []);
+    } catch (error) {
+        container.innerHTML = `
+            <div class="text-center py-8 text-red-500">
+                <i class="fas fa-exclamation-triangle text-2xl mb-2"></i>
+                <p>Erreur lors du chargement : ${escapeHtml(error.message)}</p>
+            </div>`;
+    }
+}
+
+function renderFeatures(features) {
+    const container = document.getElementById('featuresList');
+    if (!container) return;
+
+    if (!features.length) {
+        container.innerHTML = `
+            <div class="text-center py-8 text-gray-400">
+                <i class="fas fa-toggle-off text-2xl mb-2"></i>
+                <p>Aucune fonctionnalité configurable</p>
+            </div>`;
+        return;
+    }
+
+    container.innerHTML = features.map(feature => `
+        <div class="flex items-start justify-between p-5 border border-gray-200 rounded-xl hover:border-gray-300 transition">
+            <div class="flex items-start space-x-4 flex-1 min-w-0">
+                <div class="w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0 ${feature.enabled ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'}">
+                    <i class="fas ${escapeHtml(feature.icon || 'fa-puzzle-piece')}"></i>
+                </div>
+                <div class="min-w-0">
+                    <div class="flex items-center space-x-2">
+                        <p class="font-semibold text-gray-900">${escapeHtml(feature.label)}</p>
+                        <span id="feature-badge-${escapeHtml(feature.key)}"
+                            class="px-2 py-0.5 rounded-full text-xs font-medium ${feature.enabled ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}">
+                            ${feature.enabled ? 'Activée' : 'Désactivée'}
+                        </span>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-1">${escapeHtml(feature.description || '')}</p>
+                    <p class="text-xs text-gray-400 mt-2 font-mono">${escapeHtml(feature.key)}</p>
+                </div>
+            </div>
+            <button type="button"
+                id="feature-toggle-${escapeHtml(feature.key)}"
+                onclick="toggleFeature('${escapeHtml(feature.key)}', ${feature.enabled ? 'false' : 'true'})"
+                role="switch"
+                aria-checked="${feature.enabled}"
+                class="relative inline-flex flex-shrink-0 h-7 w-13 ml-4 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${feature.enabled ? 'bg-green-500' : 'bg-gray-300'}"
+                style="width: 3.25rem;">
+                <span class="inline-block h-6 w-6 mt-0.5 bg-white rounded-full shadow transform transition-transform duration-200 ${feature.enabled ? 'translate-x-6' : 'translate-x-0.5'}"></span>
+            </button>
+        </div>
+    `).join('');
+}
+
+async function toggleFeature(key, enabled) {
+    const button = document.getElementById(`feature-toggle-${key}`);
+    if (button) button.disabled = true;
+
+    try {
+        await apiRequest(`${ADMIN_API_BASE}/features/${encodeURIComponent(key)}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ enabled })
+        });
+        await loadFeaturesList();
+    } catch (error) {
+        alert('Erreur: ' + error.message);
+        if (button) button.disabled = false;
+    }
+}
+
+function escapeHtml(value) {
+    if (value === null || value === undefined) return '';
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
 }
 
 // Authentication

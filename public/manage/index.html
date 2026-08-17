@@ -165,6 +165,10 @@
                     <i class="fas fa-bell w-5"></i>
                     <span>Notifications</span>
                 </a>
+                <a href="#" data-page="features" class="nav-item flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition">
+                    <i class="fas fa-toggle-on w-5"></i>
+                    <span>Fonctionnalités</span>
+                </a>
             </nav>
 
             <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-800">
@@ -545,6 +549,30 @@
                                         <p class="text-xs text-gray-500 mt-0.5">Annoncer un nouvel événement</p>
                                     </div>
                                 </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Features Page -->
+                <div id="page-features" class="page-content hidden">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                        <div class="p-6 border-b border-gray-200 flex items-center justify-between">
+                            <div>
+                                <h2 class="text-xl font-semibold text-gray-900">Fonctionnalités de l'application</h2>
+                                <p class="text-sm text-gray-500 mt-1">Activez ou désactivez des fonctionnalités de l'application mobile. La modification est prise en compte au prochain démarrage ou rafraîchissement de l'app.</p>
+                            </div>
+                            <button onclick="loadFeaturesList()"
+                                class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition font-medium text-gray-700">
+                                <i class="fas fa-sync-alt mr-2"></i>Rafraîchir
+                            </button>
+                        </div>
+
+                        <div class="p-6">
+                            <div id="featuresList" class="space-y-4">
+                                <div class="text-center py-8 text-gray-400">
+                                    <i class="fas fa-spinner fa-spin text-2xl"></i>
+                                </div>
                             </div>
                         </div>
                     </div>

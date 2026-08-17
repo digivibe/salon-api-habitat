@@ -23,6 +23,10 @@ const {
     deleteInvite,
     updateInviteStatus
 } = require('../controllers/inviteController')
+const {
+    getFeatures,
+    updateFeature
+} = require('../controllers/featureController')
 const { requireAdmin } = require('../middlewares/auth')
 
 // Toutes les routes admin nécessitent l'authentification admin
@@ -60,6 +64,10 @@ router.post('/invites', createInvite)
 router.put('/invites/:id', updateInvite)
 router.delete('/invites/:id', deleteInvite)
 router.patch('/invites/:id/status', updateInviteStatus)
+
+// Fonctionnalités de l'application (feature flags)
+router.get('/features', getFeatures)
+router.patch('/features/:key', updateFeature)
 
 module.exports = router
 
