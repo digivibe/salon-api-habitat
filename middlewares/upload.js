@@ -20,7 +20,7 @@ const storage = multer.diskStorage({
     }
 })
 
-// Filtre pour accepter uniquement les images et vidéos
+// Filtre : toutes les images (quel que soit le format) et les formats video connus
 const fileFilter = (req, file, cb) => {
     console.log('📁 [fileFilter] Vérification du fichier:', {
         fieldname: file.fieldname,
@@ -29,33 +29,38 @@ const fileFilter = (req, file, cb) => {
         encoding: file.encoding
     })
 
-    const allowedMimes = [
-        'image/jpeg',
-        'image/jpg',
-        'image/png',
-        'image/gif',
-        'image/webp',
+    // Tout mimetype image/* est accepté : jpeg, png, gif, webp, avif, heic,
+    // svg, bmp, tiff... inutile de maintenir une liste blanche.
+    if (file.mimetype?.startsWith('image/')) {
+        console.log('✅ [fileFilter] Image autorisée:', file.mimetype)
+        return cb(null, true)
+    }
+
+    const allowedVideoMimes = [
         'video/mp4',
         'video/mpeg',
         'video/quicktime',
         'video/x-msvideo'
     ]
 
-    // Vérifier d'abord le mimetype exact
-    if (allowedMimes.includes(file.mimetype)) {
-        console.log('✅ [fileFilter] Type MIME autorisé:', file.mimetype)
+    if (allowedVideoMimes.includes(file.mimetype)) {
+        console.log('✅ [fileFilter] Type MIME vidéo autorisé:', file.mimetype)
         return cb(null, true)
     }
 
-    // Vérifier aussi par extension de fichier (pour React Native qui peut mal détecter le type)
+    // Repli par extension : certains clients (React Native, navigateurs sur des
+    // formats récents) envoient un mimetype vide ou générique.
     const extension = path.extname(file.originalname).toLowerCase()
-    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp']
-    const videoExtensions = ['.mp4', '.mov', '.avi', '.mpeg', '.mpg']
+    const imageExtensions = [
+        '.jpg', '.jpeg', '.png', '.gif', '.webp', '.avif', '.heic', '.heif',
+        '.bmp', '.tif', '.tiff', '.svg', '.ico', '.jfif', '.pjpeg', '.apng'
+    ]
+    const videoExtensions = ['.mp4', '.mov', '.avi', '.mpeg', '.mpg', '.webm', '.mkv', '.m4v']
 
     if (imageExtensions.includes(extension)) {
         console.log('✅ [fileFilter] Extension image autorisée:', extension)
         // Forcer le mimetype si nécessaire
-        if (!file.mimetype.startsWith('image/')) {
+        if (!file.mimetype?.startsWith('image/')) {
             file.mimetype = 'image/jpeg' // Par défaut
         }
         return cb(null, true)
@@ -64,7 +69,7 @@ const fileFilter = (req, file, cb) => {
     if (videoExtensions.includes(extension)) {
         console.log('✅ [fileFilter] Extension vidéo autorisée:', extension)
         // Forcer le mimetype si nécessaire
-        if (!file.mimetype.startsWith('video/')) {
+        if (!file.mimetype?.startsWith('video/')) {
             file.mimetype = 'video/mp4' // Par défaut
         }
         return cb(null, true)

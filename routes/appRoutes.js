@@ -22,12 +22,14 @@ const {
     deleteEventMessage
 } = require('../controllers/eventMessageController')
 const { getPublicFeatures } = require('../controllers/featureController')
+const { getPublicSettings } = require('../controllers/settingController')
 const { requireAdmin, requireExposant } = require('../middlewares/auth')
 const { filterBySalon } = require('../middlewares/salon')
 
 // Route publique
 router.get('/version', getVersion)
 router.get('/features', getPublicFeatures)
+router.get('/settings', getPublicSettings)
 
 // Routes avec filtrage par salon
 router.get('/categories', filterBySalon, getAllCategories)

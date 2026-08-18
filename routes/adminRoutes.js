@@ -27,7 +27,33 @@ const {
     getFeatures,
     updateFeature
 } = require('../controllers/featureController')
+const {
+    getSettings,
+    updateSettings,
+    updateHomeCardImage
+} = require('../controllers/settingController')
 const { requireAdmin } = require('../middlewares/auth')
+const { upload, uploadToCloudinary } = require('../middlewares/upload')
+
+// Gestion des erreurs multer (taille, type refuse)
+const handleMulterError = (err, req, res, next) => {
+    if (err) {
+        console.error('❌ [Multer Error - admin]', err.message)
+
+        if (err.code === 'LIMIT_FILE_SIZE') {
+            return res.status(400).json({
+                success: false,
+                message: 'Fichier trop volumineux. Taille maximum: 100MB'
+            })
+        }
+
+        return res.status(400).json({
+            success: false,
+            message: err.message || 'Erreur lors de l\'upload du fichier'
+        })
+    }
+    next()
+}
 
 // Toutes les routes admin nécessitent l'authentification admin
 router.use(requireAdmin)
@@ -68,6 +94,17 @@ router.patch('/invites/:id/status', updateInviteStatus)
 // Fonctionnalités de l'application (feature flags)
 router.get('/features', getFeatures)
 router.patch('/features/:key', updateFeature)
+
+// Reglages globaux de l'application
+router.get('/settings', getSettings)
+router.put('/settings', updateSettings)
+router.post(
+    '/settings/home-card-image',
+    upload.single('image'),
+    handleMulterError,
+    uploadToCloudinary,
+    updateHomeCardImage
+)
 
 module.exports = router
 

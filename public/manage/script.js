@@ -143,6 +143,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Carte d'accueil : soumission et apercu de l'image choisie
+    const homeCardForm = document.getElementById('homeCardForm');
+    if (homeCardForm) {
+        homeCardForm.addEventListener('submit', handleHomeCardSubmit);
+    }
+
+    const homeCardImageFile = document.getElementById('homeCardImageFile');
+    if (homeCardImageFile) {
+        homeCardImageFile.addEventListener('change', (e) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            homeCardImageCleared = false;
+            renderHomeCardImagePreview(URL.createObjectURL(file));
+        });
+    }
+
     const editSalonDescription = document.getElementById('editSalonDescription');
     if (editSalonDescription) {
         editSalonDescription.addEventListener('input', (e) => {
@@ -291,6 +307,7 @@ function navigateToPage(pageName) {
             break;
         case 'features':
             loadFeaturesList();
+            loadHomeCardSettings();
             break;
     }
 }
@@ -376,6 +393,132 @@ async function toggleFeature(key, enabled) {
         alert('Erreur: ' + error.message);
         if (button) button.disabled = false;
     }
+}
+
+// ==================== Carte d'accueil (reglages globaux) ====================
+
+let homeCardImageCleared = false;
+
+async function loadHomeCardSettings() {
+    const form = document.getElementById('homeCardForm');
+    if (!form) return;
+
+    try {
+        const data = await apiRequest(`${ADMIN_API_BASE}/settings`);
+        const values = data.data?.values || {};
+
+        document.getElementById('homeCardTitle').value = values.home_card_title || '';
+        renderHomeCardImagePreview(values.home_card_image || '');
+
+        homeCardImageCleared = false;
+        const fileInput = document.getElementById('homeCardImageFile');
+        if (fileInput) fileInput.value = '';
+
+        document.getElementById('homeCardMessage').classList.add('hidden');
+    } catch (error) {
+        showHomeCardMessage('Erreur lors du chargement : ' + error.message, false);
+    }
+}
+
+function renderHomeCardImagePreview(imageUrl) {
+    const wrapper = document.getElementById('homeCardImagePreviewWrapper');
+    const preview = document.getElementById('homeCardImagePreview');
+    const defaultHint = document.getElementById('homeCardImageDefault');
+    const resetBtn = document.getElementById('homeCardImageReset');
+
+    if (!wrapper || !preview || !defaultHint || !resetBtn) return;
+
+    if (imageUrl) {
+        preview.src = imageUrl;
+        wrapper.classList.remove('hidden');
+        defaultHint.classList.add('hidden');
+        resetBtn.classList.remove('hidden');
+    } else {
+        preview.removeAttribute('src');
+        wrapper.classList.add('hidden');
+        defaultHint.classList.remove('hidden');
+        resetBtn.classList.add('hidden');
+    }
+}
+
+function resetHomeCardImage() {
+    homeCardImageCleared = true;
+    const fileInput = document.getElementById('homeCardImageFile');
+    if (fileInput) fileInput.value = '';
+    renderHomeCardImagePreview('');
+}
+
+function showHomeCardMessage(text, isSuccess) {
+    const messageDiv = document.getElementById('homeCardMessage');
+    if (!messageDiv) return;
+    messageDiv.className = isSuccess
+        ? 'p-4 bg-green-50 border-2 border-green-200 text-green-700 rounded-lg'
+        : 'p-4 bg-red-50 border-2 border-red-200 text-red-700 rounded-lg';
+    messageDiv.textContent = text;
+    messageDiv.classList.remove('hidden');
+}
+
+async function handleHomeCardSubmit(e) {
+    e.preventDefault();
+
+    const submitBtn = document.getElementById('homeCardSubmit');
+    if (submitBtn) submitBtn.disabled = true;
+
+    try {
+        const payload = {
+            home_card_title: document.getElementById('homeCardTitle').value.trim()
+        };
+
+        // Remise a l'image par defaut demandee : on vide la valeur cote API
+        if (homeCardImageCleared) {
+            payload.home_card_image = '';
+        }
+
+        await apiRequest(`${ADMIN_API_BASE}/settings`, {
+            method: 'PUT',
+            body: JSON.stringify(payload)
+        });
+
+        // Nouvelle image envoyee apres le PUT (multipart), pour qu'une remise a
+        // zero suivie d'un choix de fichier conserve bien le fichier choisi.
+        const file = document.getElementById('homeCardImageFile')?.files?.[0];
+        if (file) {
+            await uploadHomeCardImage(file);
+        }
+
+        await loadHomeCardSettings();
+        showHomeCardMessage('Carte d\'accueil mise a jour avec succes !', true);
+    } catch (error) {
+        showHomeCardMessage('Erreur : ' + error.message, false);
+    } finally {
+        if (submitBtn) submitBtn.disabled = false;
+    }
+}
+
+async function uploadHomeCardImage(file) {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    // apiRequest force Content-Type: application/json, incompatible avec le
+    // multipart : le boundary doit etre pose par le navigateur.
+    const response = await fetch(`${ADMIN_API_BASE}/settings/home-card-image`, {
+        method: 'POST',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: formData
+    });
+
+    if (response.status === 401 || response.status === 403) {
+        logout();
+        throw new Error('Session expiree');
+    }
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+        throw new Error(data.message || "Erreur lors de l'envoi de l'image");
+    }
+
+    return data;
 }
 
 function escapeHtml(value) {
@@ -1275,7 +1418,7 @@ async function handleEditSalon(e) {
             isActive: isActive,
             statut
         };
-        
+
         await apiRequest(`${SALON_API_BASE}/${salonId}`, {
             method: 'PUT',
             body: JSON.stringify(salonData)

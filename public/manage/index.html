@@ -576,6 +576,53 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Carte d'accueil de l'application -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 mt-6">
+                        <div class="p-6 border-b border-gray-200">
+                            <h2 class="text-xl font-semibold text-gray-900">Carte d'accueil</h2>
+                            <p class="text-sm text-gray-500 mt-1">Personnalise la carte affichée sur l'écran d'accueil de l'application. Ces réglages s'appliquent à tous les salons. Laissez vide pour conserver l'affichage par défaut.</p>
+                        </div>
+
+                        <form id="homeCardForm" class="p-6 space-y-5">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Titre affiché</label>
+                                <input type="text" id="homeCardTitle" maxlength="100"
+                                    placeholder="Par défaut : le nom du salon courant"
+                                    class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <p class="text-xs text-gray-500 mt-1">Videz le champ pour réafficher le nom du salon.</p>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Image d'arrière-plan</label>
+                                <div id="homeCardImagePreviewWrapper" class="hidden mb-3">
+                                    <img id="homeCardImagePreview" alt="Aperçu de l'image de la carte"
+                                        class="w-full h-40 object-cover rounded-lg border-2 border-gray-200">
+                                </div>
+                                <p id="homeCardImageDefault" class="text-xs text-gray-500 mb-3 hidden">
+                                    <i class="fas fa-info-circle mr-1"></i>Aucune image personnalisée : l'application utilise son image embarquée.
+                                </p>
+                                <input type="file" id="homeCardImageFile" accept="image/*"
+                                    class="w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                                <div class="flex items-center justify-between mt-2">
+                                    <p class="text-xs text-gray-500">JPG, PNG ou WebP. L'image est envoyée à l'enregistrement.</p>
+                                    <button type="button" id="homeCardImageReset" onclick="resetHomeCardImage()"
+                                        class="hidden text-xs font-medium text-red-600 hover:text-red-700">
+                                        <i class="fas fa-rotate-left mr-1"></i>Remettre l'image par défaut
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-end">
+                                <button type="submit" id="homeCardSubmit"
+                                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
+                                    <i class="fas fa-save mr-2"></i>Enregistrer
+                                </button>
+                            </div>
+
+                            <div id="homeCardMessage" class="hidden"></div>
+                        </form>
+                    </div>
                 </div>
 
             </main>
@@ -850,6 +897,7 @@
                             <option value="0">Inactif</option>
                         </select>
                     </div>
+
                 </div>
                 <div class="mt-6 flex justify-end space-x-3">
                     <button type="button" onclick="closeEditSalonModal()" 
