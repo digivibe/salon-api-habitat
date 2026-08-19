@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<!-- saved from url=(0253)https://bee9abd8-9add-4370-910c-51239da58859.frame.claudeusercontent.com/_f/1787155144-6565/?__frame_t=EQ_WQOFBhX7MvKOaTeCcamar.43b8d8d8-fbdc-42ec-a0c2-fc8252d89a3e.bf26c06e-b8f2-4c44-945f-b47e063d1c68.1787158745&__frame_v=manifest.6888d66fadc7b1af.json -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><!-- frame-runtime --><!--<base href="/_f/1787155144-6565/">--><base href="."><script>window.__FRAME_PREAMBLE={"capabilities":{"artifact":"artifact.BWD0CGLd.js","assets":"assets.BkxVItX2.js","comments":"comments.CaMLzWgX.js","db":"db.5PgiKS-2.js","downloads":"downloads.C3GSvEDP.js","embed":"embed.CbQfZY8W.js","mcp":"mcp.D3B2EyQu.js","permissions":"permissions.BNySkLV5.js","room":"room.BgXZkiYR.js","sample":"sample.B3bg5_Ty.js","self":"artifact.BWD0CGLd.js","user":"user.BpKav-Rf.js"},"transforms":"_transforms.h3_8GSUa.js","comments":"_comments.8rmPM2AJ.js","translate":"_translate.5HCW4BJh.js"}</script><script>(function(){"use strict";var ce=["light","dark","system"],ue=/^[A-Za-z0-9_-]{1,64}$/,V=/^[a-zA-Z_:][a-zA-Z0-9_:.-]{0,127}$/,fe=new Set(["class","hidden","value","checked"]);function de(e){const t=e.toLowerCase();return t.startsWith("data-")||t.startsWith("aria-")||fe.has(t)}var pe="http://www.w3.org/1999/xhtml",me="http://www.w3.org/2000/svg",ge=new Set(["script","style","iframe","noscript","noframes","noembed","xmp","plaintext","template","title","textarea","object","embed"]),_e=new Set(["script","style"]);function ve(e){const t=e.localName.toLowerCase();return e.namespaceURI===pe?!ge.has(t):e.namespaceURI===me?!_e.has(t):!1}function he(e){if(e===null||typeof e!="object")return!1;const t=e.__frame_patch;if(t===null||typeof t!="object")return!1;const{seq:n,elements:a}=t;if(typeof n!="number"||!Number.isSafeInteger(n)||!Array.isArray(a)||a.length===0||a.length>64)return!1;for(const i of a){if(i===null||typeof i!="object")return!1;const r=i;if(typeof r.target!="string"||!ue.test(r.target)||r.text!==void 0&&typeof r.text!="string")return!1;if(r.attrsSet!==void 0){if(r.attrsSet===null||typeof r.attrsSet!="object")return!1;for(const[l,c]of Object.entries(r.attrsSet))if(!V.test(l)||typeof c!="string")return!1}if(r.attrsRemoved!==void 0){if(!Array.isArray(r.attrsRemoved))return!1;for(const l of r.attrsRemoved)if(typeof l!="string"||!V.test(l))return!1}}return!0}function ye(e){if(e===null||typeof e!="object")return!1;const t=e.__frame_init;return t!==null&&typeof t=="object"}function be(e){return e!==null&&typeof e=="object"&&e.__frame_size_poke===!0}function Ee(e){if(e===null||typeof e!="object")return!1;const t=e.__frame_theme;if(t===null||typeof t!="object")return!1;const n=t.theme;return typeof n=="string"&&ce.includes(n)}function we(e){try{typeof reportError=="function"?reportError(e):setTimeout(()=>{throw e},0)}catch{}}var X=["#62744c","#b04e72","#5b7596","#a3651f","#7a6ba8","#3f7a75"];function J(e){let t=0;for(let n=0;n<e.length;n++)t=t*31+e.charCodeAt(n)>>>0;return X[t%X.length]??"#788c5d"}var Z="#c7c9d1",Ae=["data:image","/svg+xml,"].join("");function Q(e){return Ae+"%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2 2'%3E%3Ccircle cx='1' cy='1' r='1' fill='"+encodeURIComponent(e)+"'/%3E%3C/svg%3E"}var Se=Object.freeze({id:null,name:"",avatarUrl:Q(Z),color:Z,email:null,isOwner:!1,canEdit:!1});function je(...e){const t=e[0],n=typeof t=="string"?[t]:Array.isArray(t)?t.filter(i=>typeof i=="string"):[],a=Object.create(null);for(const i of n)a[i]={id:i,name:"",avatarUrl:Q(J(i)),color:J(i),email:null,isMe:!1};return a}var ee=Object.freeze(Object.assign(Object.create(null),{user:Object.freeze(Object.assign(Object.create(null),{id:null,isOwner:!1,canEdit:!1,me:Se,profiles:je,name:"",avatarUrl:null,search:Object.freeze([]),email:null}))})),Re={sample:"sample"};function te(){const e=new Uint8Array(20);try{crypto.getRandomValues(e)}catch{for(let n=0;n<e.length;n++)e[n]=Math.floor(Math.random()*256)}let t="";for(const n of e)t+=(n%36).toString(36);return t}function Oe(e,t){const n=r=>{const l={path:r},c=r.split("/");return{id:c[c.length-1],path:r,get:()=>t("get",[l]),set:d=>t("set",[l,d]),update:d=>t("update",[l,d]),delete:()=>t("delete",[l]),acquire:d=>t("acquire",[l,d]),onSnapshot:(d,E)=>t("subscribe",[l,d,E]),collection:d=>i(r+"/"+String(d))}},a=r=>({where:(l,c,d)=>a({...r,where:[...r.where??[],{f:String(l),op:String(c),v:d}]}),orderBy:(l,c)=>a({...r,orderBy:{f:String(l),dir:c===void 0?"asc":String(c)}}),limit:l=>a({...r,limit:Number(l)}),get:()=>t("query",[r]),onSnapshot:(l,c)=>t("subscribe",[r,l,c])}),i=r=>({...a({collection:r}),path:r,doc:l=>n(r+"/"+(l===void 0?te():String(l))),add:l=>{const c=n(r+"/"+te());return Promise.resolve(c.set(l)).then(()=>c)}});e.doc=r=>n(String(r)),e.collection=r=>i(String(r))}var Pe=Object.freeze([]);function Te(e,t){let n=null,a=null;const i=()=>e.__settled;e.peers=()=>Pe,e.connected=()=>!1,e.emit=()=>i()?.()??Promise.resolve(),e.presence=r=>{const l=i();if(l)return l();let c=null;if(r!==null&&typeof r=="object")try{Array.isArray(r)||(c={...r})}catch{}return c===null?Promise.reject({code:"invalid_argument",message:"presence takes an object"}):(n===null&&(n=Object.create(null),a=Promise.resolve(t("presence",[n]))),Object.assign(n,c),a)}}var B="__frame_scroll",Me=150,Le=310,ke=160,Ce=3e4;function Ne(){let e=0,t=!1,n=!1,a=!1,i=0,r=null;const l=u=>{try{sessionStorage.setItem(B,JSON.stringify({y:u}))}catch{}},c=()=>{if(clearTimeout(e),r===null)return;const u=r;r=null,l(u)},d=()=>{if(t){t=!1;return}n=!0,r=scrollY,clearTimeout(e),e=setTimeout(c,Me)};try{addEventListener("scroll",d,{passive:!0}),addEventListener("pagehide",c)}catch{}const E=()=>{let u;try{u=sessionStorage.getItem(B)}catch{return null}if(u===null)return null;let g;try{g=JSON.parse(u)}catch{g=null}const f=g?.y;if(!(typeof f=="number"&&Number.isFinite(f)&&f>=0)){try{sessionStorage.removeItem(B)}catch{}return null}return f};let T=!1;const h=u=>{try{const g=scrollY;scrollTo({top:u,left:0,behavior:"instant"}),i=u,a=!0,clearTimeout(e),r=null,l(u);const f=scrollY;f!==g&&(t=!0),f!==u&&!T&&(T=!0,addEventListener("load",()=>{try{if(scrollY===f){const p=E();h(p!==null?p:i)}}catch{}},{once:!0}))}catch{}},R=()=>{try{return!!location.hash}catch{return!0}};let A=!1;const O=()=>{try{if(A||innerWidth>Le||innerHeight>ke)return;A=!0;const u=Date.now(),g=()=>{try{removeEventListener("resize",g)}catch{}if(Date.now()-u>Ce||n||R())return;const f=E();h(f!==null?f:i)};addEventListener("resize",g)}catch{}};let M=!1,o=!1;return{restore(){if(M||(M=!0,R()))return;const u=E();u!==null&&(h(u),O())},promoted(){if(o||(o=!0,R()))return;const u=E();u!==null?(h(u),O()):a&&h(i)}}}var Ye="modulepreload",We=function(e){return"/"+e},Ke={},Ue=function(t,n,a){let i=Promise.resolve();function r(l){const c=new Event("vite:preloadError",{cancelable:!0});if(c.payload=l,window.dispatchEvent(c),!c.defaultPrevented)throw l}return i.then(l=>{for(const c of l||[])c.status==="rejected"&&r(c.reason);return t().catch(r)})};(function(){const e=Object.defineProperty,t=globalThis,n=["RTCPeerConnection","webkitRTCPeerConnection","RTCDataChannel","RTCIceCandidate","RTCSessionDescription","RTCRtpSender","RTCRtpReceiver"];let a=0;for(let i=0;i<n.length;i++){const r=n[i];try{e(t,r,{value:void 0,writable:!1,configurable:!1})}catch{try{delete t[r]}catch{}try{e(t,r,{value:void 0,writable:!1,configurable:!0})}catch{}}typeof t[r]=="function"&&a++}if(a&&window!==top)try{parent.postMessage({__frame_rtc_lockdown_failed:a},"*")}catch{}})();var qe=1e4,Ie=Object.freeze([...window.__FRAME_PREAMBLE?.origins??["https://claude.ai","https://preview.claude.ai"]]);function re(e){for(const t of Ie)if(t.endsWith(":*"))try{const n=new URL(e);if(`${n.protocol}//${n.hostname}:*`===t)return!0}catch{}else if(e===t)return!0;return!1}var k=Object.freeze({...window.__FRAME_PREAMBLE?.capabilities}),x=window.__FRAME_PREAMBLE?.transforms,$=window.__FRAME_PREAMBLE?.comments,z=window.__FRAME_PREAMBLE?.translate,q=/^[\w.-]+\.js$/,De=/^[a-z][a-z0-9_-]{0,63}$/;function I(e){return Ue(()=>import("/_runtime/"+e),void 0)}function Be(e,t){return{contract:e.contract,changes:new Set(e.changes??[]),flags:new Set(e.flags??[]),capabilities:e.capabilities??{},capBudgets:e.capBudgets??{},transforms:new Map,shellOrigin:t,mount:Y,pipe:()=>({wrap:(n,a)=>(...i)=>{try{return a(...i)}catch(r){return Promise.reject(r)}}})}}var ne=null,C=null;function F(e,t,n){try{Object.defineProperty(e,t,{value:n,writable:!1,configurable:!1,enumerable:!0})}catch{try{Object.defineProperty(e,t,{value:n,writable:!1,configurable:!0,enumerable:!0})}catch{}}}var H=!1;function xe(e,t){const n=[];for(const a of e.elements){const i=document.querySelector(`[data-id="${a.target}"]`);if(!i){parent.postMessage({__frame_patch_miss:{seq:e.seq}},t);return}if([...Object.keys(a.attrsSet??{}),...a.attrsRemoved??[]].some(r=>!de(r))){parent.postMessage({__frame_patch_miss:{seq:e.seq}},t);return}if(a.text!==void 0&&!ve(i)){parent.postMessage({__frame_patch_miss:{seq:e.seq}},t);return}for(const[r,l]of Object.entries(a.attrsSet??{}))if(!oe(i,r)){try{i.setAttribute(r,l)}catch{}se(i,r,l)}for(const r of a.attrsRemoved??[])oe(i,r)||(i.removeAttribute(r),se(i,r,null));typeof a.text=="string"&&(i.textContent=a.text),n.push(a.target)}try{document.dispatchEvent(new CustomEvent("claude:edit",{detail:{seq:e.seq,targets:n}}))}catch{}}function se(e,t,n){if(!(e instanceof HTMLInputElement))return;const a=t.toLowerCase();a==="checked"?e.checked=n!==null:a==="value"&&e.type!=="file"&&(e.value=n??"")}function oe(e,t){const n=t.toLowerCase(),a=e;return n==="data-id"||(n==="value"||n==="checked")&&(a.__artifactSecret===!0||/^(password|hidden|file)$/.test(a.type??"")||/(^|\s)(cc-|one-time-code|current-password|new-password)/i.test(`${e.getAttribute("autocomplete")??""} ${a.autocomplete??""}`))}function ae(e){const t=document.documentElement;e==="light"||e==="dark"?(t.dataset.theme=e,t.style.colorScheme=e,H=!0):H&&(delete t.dataset.theme,t.style.colorScheme="",H=!1)}var ie=256,N=Object.assign(Object.create(null),{mcp:Object.assign(Object.create(null),{watchTool:{handlerArg:3}}),db:Object.assign(Object.create(null),{subscribe:{handlerArg:1,errArg:2}}),room:Object.assign(Object.create(null),{on:{handlerArg:1,errArg:2},onPeers:{handlerArg:0,errArg:1},onConnection:{handlerArg:0,errArg:1}})}),$e=Object.assign(Object.create(null),{db:(e,t)=>Oe(e,t),room:(e,t,n)=>Te(e,n)}),j=new Map;function Y(e,t){const n=j.get(e);if(!n)return;const a=Object.assign(Object.create(null),t);Object.assign(n.impl,a),n.r(n.ns),n.impl.__settled=()=>Promise.reject({code:"capability_removed",message:`${e}: method not in this runtime`});const i=n.queue;n.queue=[];for(const r of i){const l=a[r.method];if(l)if(N[e]?.[r.method])try{r.resolve(l(...r.args))}catch{U(r,N[e][r.method],{code:"transform_error",message:`${e}.${r.method} rejected its arguments`})}else l(...r.args).then(r.resolve,r.reject);else{const c={code:"capability_removed",message:`${e}.${r.method} is not in this runtime`},d=N[e]?.[r.method];if(d){U(r,d,c);continue}r.reject(c)}}}function ze(e,t){const n=j.get(e);if(!n)return;n.impl.__settled=()=>Promise.reject(t),n.r(null);const a=n.queue;n.queue=[];for(const i of a){const r=N[e]?.[i.method];if(r){U(i,r,t);continue}i.reject(t)}}function le(e,t){if(typeof e=="function")try{return e(...t)}catch{return Object.create(null)}return Array.isArray(e)?[...e]:e!==null&&typeof e=="object"?{...e}:e}function D(e,t){const n=ee[e];if(!n){ze(e,t);return}j.get(e)?.r(null),Y(e,Object.fromEntries(Object.entries(n).map(([a,i])=>[a,(...r)=>Promise.resolve(le(i,r))])))}function U(e,t,n){if(e.syncState?.dead)return;const a=t.errArg===void 0?void 0:e.args[t.errArg],i=t.errArg===void 0?e.args[t.handlerArg]:a;typeof i=="function"&&queueMicrotask(()=>{if(!e.syncState?.dead)try{i(t.errArg===void 0?{type:"error",error:n}:n)}catch(r){we(r)}})}var W=Object.getOwnPropertyDescriptor(window,"claude");if(window!==top&&!(W&&W.writable===!1)){const e=x&&q.test(x)?I(x).catch(()=>{}):Promise.resolve(void 0),t=o=>{if(o.type==="auxclick"&&o.button!==1)return;const u=o.target,g=u&&u.closest?u.closest("a[href],area[href]"):null;if(!g)return;const f=g.getAttribute("href");if(!f)return;let p,P;try{p=new URL(f,document.baseURI),P=new URL(document.baseURI).origin}catch{return}if((p.protocol==="http:"||p.protocol==="https:")&&p.origin!==P){o.preventDefault();const w=(g.getAttribute("target")??"").toLowerCase(),y=o.type==="auxclick"||o.metaKey||o.ctrlKey||o.shiftKey||o.altKey||!["","_self","_top","_parent"].includes(w);parent.postMessage({__frame_nav:!0,url:p.href,newTab:y},"*")}};addEventListener("click",t,!0),addEventListener("auxclick",t,!0);const n={},a=o=>{o.isTrusted&&(n.pointer=!0)},i=o=>{o.isTrusted&&(n.click=!0)};addEventListener("pointermove",a,{capture:!0,passive:!0}),addEventListener("click",i,{capture:!0,passive:!0}),e.then(o=>{o?.wireNav&&(o.wireNav(),removeEventListener("click",t,!0),removeEventListener("auxclick",t,!0),removeEventListener("pointermove",a,!0),removeEventListener("click",i,!0),o.wireEngagement?.(n))});let r=null;try{r=Ne()}catch{}const l=W?.value??{};F(window,"claude",l);const c=o=>{let u;const g=new Promise(v=>{u=v}),f={impl:Object.create(null),queue:[],u:g,r:u,ns:null};j.set(o,f);const p=f.impl,P=v=>({code:"queue_overflow",message:`${o}.${v}: pre-init call queue is full`}),w=(v,s)=>{if(f.queue.length>=ie){const m=ee[o];return m&&v in m?Promise.resolve(le(m[v],s)):Promise.reject(P(v))}return new Promise((m,_)=>{f.queue.push({method:v,args:s,resolve:m,reject:_})})},y=Re[o],L=new Proxy(y===void 0?p:(()=>{}),{apply:(v,s,m)=>{const _=y,b=p[_]??p.__settled;return b?b(...m):w(_,m)},get:(v,s)=>{if(typeof s!="string"||s==="then"||s==="toJSON"||s==="valueOf")return;if(s==="toString")return Object.prototype.toString;if(y!==void 0&&(s==="call"||s==="apply"||s==="bind"))return Function.prototype[s];const m=N[o]?.[s];return m?(..._)=>{if(typeof _[m.handlerArg]!="function")throw new TypeError(`${o}.${s} requires a handler function`);const b=p[s];if(b)return b(..._);if(p.__settled){const S={dead:!1},Fe={args:[..._],syncState:S};return p.__settled().catch(He=>U(Fe,m,He)),()=>{S.dead=!0}}if(f.queue.length>=ie){const S={dead:!1};return U({args:[..._],syncState:S},m,P(s)),()=>{S.dead=!0}}let K=null;const G={dead:!1};return f.queue.push({method:s,args:_,resolve:S=>{K=typeof S=="function"?S:null,G.dead&&K?.()},reject:()=>{},syncState:G}),()=>{G.dead=!0,K?.()}}:(..._)=>{const b=p[s]??p.__settled;return b?b(..._):w(s,_)}},set:()=>!1});$e[o]?.(p,(v,s)=>L[v](...s),w),f.ns=L,F(l,o,L)};for(const o of Object.keys(k)){if(l[o]!==void 0){F(l,o,l[o]);continue}c(o)}if(l.use===void 0){const o=u=>{if(typeof u!="string"||!Object.hasOwn(k,u))return Promise.resolve(null);const g=j.get(u);return g?g.u:Promise.resolve(l[u]??null)};try{Object.defineProperty(l,"use",{value:o,writable:!0,configurable:!0,enumerable:!1})}catch{}}let d=null,E=null,T=0;const h=o=>{o.source!==parent||!re(o.origin)||ye(o.data)&&(d=o.data.__frame_init,C=o.origin,removeEventListener("message",h),clearTimeout(T),E?.())};addEventListener("message",h),parent.postMessage({__frame_connect:!0},"*");const R=new Promise(o=>{E=o,T=setTimeout(()=>{removeEventListener("message",h),o()},qe)}),A=document.readyState==="loading"?new Promise(o=>document.addEventListener("DOMContentLoaded",()=>o(),{once:!0})):Promise.resolve();A.then(()=>{try{r?.restore()}catch{}});const O={cb:null},M=o=>{if(!(o.source!==parent||!re(o.origin))&&be(o.data)){try{r?.promoted()}catch{}O.cb?.()}};addEventListener("message",M),R.then(async()=>{if(!d||!C){for(const s of j.keys())D(s,{code:"not_granted",message:"frame initialization did not arrive - capability unavailable"});return}ae(d.theme);const o=C;let u=!1,g=!1;addEventListener("message",s=>{if(s.source!==parent||s.origin!==o)return;Ee(s.data)&&ae(s.data.__frame_theme.theme),he(s.data)&&xe(s.data.__frame_patch,o);const m=s.data?.__fc_mode;m&&typeof m=="object"&&!u&&$&&q.test($)&&(u=!0,I($).then(b=>b.install?.(o,m.on===!0)).catch(()=>{}));const _=s.data?.__ft_cmd;_&&typeof _=="object"&&!g&&z&&q.test(z)&&(g=!0,I(z).then(b=>b.install?.(o,_)).catch(()=>{}))});const f=Object.keys(d.capabilities??{});for(const s of f)Object.hasOwn(k,s)||De.test(s)&&l[s]===void 0&&(c(s),D(s,{code:"capability_disabled",message:"capability not in this runtime generation"}));const p=f.filter(s=>Object.hasOwn(k,s)).map(s=>[s,k[s]]).filter(s=>typeof s[1]=="string"&&q.test(s[1])),P=await Promise.allSettled(p.map(([,s])=>I(s))),w=await e,y=C;w?.buildBoot||parent.postMessage({__frame_cap_telemetry:{kind:"cap-load-error",cap:"_transforms"}},y),ne=w?.buildBoot?w.buildBoot(d,w.TRANSFORMS??{},{shellOrigin:y,mount:Y},s=>parent.postMessage({__frame_cap_telemetry:s},y)):Be(d,y);const L=s=>parent.postMessage({__frame_cap_telemetry:{kind:"cap-load-error",cap:s}},y),v=ne;P.forEach((s,m)=>{const _=p[m][0];if(s.status!=="fulfilled"){L(_);return}try{s.value?.install?.(v)}catch{L(_)}});for(const[s,m]of j)if(m.impl.__settled===void 0){if(f.includes(s)){D(s,{code:"capability_disabled",message:"capability not available in this session"});continue}D(s,{code:"not_granted",message:"capability not available in this session"})}await A,parent.postMessage({__frame_ready:!0},C),e.then(s=>s?.installSizeReporter?.(y,O))})}})();</script><!-- /frame-runtime --><meta name="viewport" content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}</style></head><body>
+<title>Connexion Gestev</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+<link rel="stylesheet" href="./css2">
+
+<style>
+  :root {
+    --paper: #eff3f5;
+    --card: #ffffff;
+    --plate: #e6ecef;
+    --ink: #10191e;
+    --ink-soft: #33454e;
+    --muted: #5d707a;
+    --faint: #8b9ba3;
+    --rule: #d3dde2;
+    --line: #9fb3bd;
+    --node-rule: #b9c9d1;
+    --accent: #0a6f95;
+    --accent-wash: #0a6f950f;
+    --snag: #a03f4e;
+    --snag-ink: #7d2c39;
+    --snag-wash: #a03f4e12;
+    --good: #17624a;
+    --good-ink: #0f4636;
+    --good-wash: #17624a12;
+
+    --shell: min(66rem, 100% - 2.5rem);
+    --column: 38rem;
+
+    --f-display: "Bricolage Grotesque", "Trebuchet MS", sans-serif;
+    --f-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #0a1216;
+      --card: #16242c;
+      --plate: #0f1c22;
+      --ink: #e8f0f3;
+      --ink-soft: #c4d3da;
+      --muted: #94a6ae;
+      --faint: #6e828b;
+      --rule: #203038;
+      --line: #4a626e;
+      --node-rule: #354a55;
+      --accent: #4fbfe4;
+      --accent-wash: #4fbfe418;
+      --snag: #e08a97;
+      --snag-ink: #f0b8c0;
+      --snag-wash: #e08a9714;
+      --good: #6ac9a4;
+      --good-ink: #9adcc2;
+      --good-wash: #6ac9a414;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper: #0a1216;
+    --card: #16242c;
+    --plate: #0f1c22;
+    --ink: #e8f0f3;
+    --ink-soft: #c4d3da;
+    --muted: #94a6ae;
+    --faint: #6e828b;
+    --rule: #203038;
+    --line: #4a626e;
+    --node-rule: #354a55;
+    --accent: #4fbfe4;
+    --accent-wash: #4fbfe418;
+    --snag: #e08a97;
+    --snag-ink: #f0b8c0;
+    --snag-wash: #e08a9714;
+    --good: #6ac9a4;
+    --good-ink: #9adcc2;
+    --good-wash: #6ac9a414;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--f-body);
+    font-size: 18px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .shell { width: var(--shell); margin-inline: auto; display: grid; justify-items: center; }
+  .col { width: min(var(--column), 100%); }
+
+  header.top { width: 100%; padding: 4rem 0 2.5rem; display: grid; justify-items: center; }
+
+  .kicker {
+    font-weight: 600;
+    font-size: 0.82rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 1.1rem;
+  }
+
+  h1 {
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: clamp(2.5rem, 6.5vw, 3.6rem);
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+    margin: 0 0 1.2rem;
+  }
+
+  .lede { font-size: 1.2rem; line-height: 1.55; color: var(--ink-soft); margin: 0; text-wrap: pretty; }
+
+  section { width: 100%; display: grid; justify-items: center; }
+  section + section { margin-top: 3.75rem; }
+
+  h2 {
+    font-family: var(--f-display);
+    font-weight: 600;
+    font-size: 1.75rem;
+    letter-spacing: -0.018em;
+    line-height: 1.15;
+    margin: 0 0 0.5rem;
+    text-wrap: balance;
+  }
+
+  .sub { color: var(--muted); font-size: 1rem; margin: 0 0 1.75rem; }
+
+  p { margin: 0 0 1.15rem; text-wrap: pretty; }
+  p:last-child { margin-bottom: 0; }
+
+  strong { font-weight: 600; }
+  em { font-style: italic; }
+  a { color: var(--accent); }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  /* ============ planche + boîte à diagrammes ============ */
+
+  figure { width: min(var(--shell), 100%); margin: 0; display: grid; justify-items: center; }
+
+  .plate-box {
+    width: 100%;
+    background: var(--plate);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .plate-head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.7rem;
+    padding: 0.75rem 1.15rem;
+    border-bottom: 1px solid var(--rule);
+    font-size: 0.73rem;
+    font-weight: 600;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .plate-head b {
+    color: var(--ink);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    text-transform: none;
+    font-size: 0.95rem;
+  }
+
+  .plate-body { padding: 2rem 1.25rem 2.25rem; }
+
+  figcaption {
+    width: min(var(--column), 100%);
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin-top: 1.1rem;
+    text-wrap: pretty;
+  }
+
+  /* --- briques --- */
+
+  .flow { display: grid; justify-items: center; width: 100%; }
+
+  .node {
+    background: var(--card);
+    border: 1px solid var(--node-rule);
+    border-radius: 7px;
+    padding: 0.7rem 1.05rem;
+    font-size: 0.97rem;
+    line-height: 1.35;
+    color: var(--ink);
+    text-align: center;
+    max-width: 24rem;
+  }
+
+  .node small {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.4;
+    margin-top: 0.25rem;
+  }
+
+  .node.start { border-radius: 999px; background: var(--accent-wash); border-color: var(--accent); color: var(--ink); font-weight: 600; }
+  .node.ask { border-style: dashed; font-weight: 600; }
+  .node.bad { border-color: var(--snag); background: var(--snag-wash); }
+  .node.bad b { color: var(--snag-ink); font-weight: 600; }
+  .node.good { border-color: var(--good); background: var(--good-wash); font-weight: 600; }
+  .node.wide { max-width: 30rem; }
+
+  .arrow {
+    color: var(--line);
+    font-size: 1.15rem;
+    line-height: 1;
+    padding: 0.5rem 0;
+    user-select: none;
+  }
+
+  .arrow.labelled {
+    display: grid;
+    justify-items: center;
+    gap: 0.15rem;
+    font-size: 1.15rem;
+  }
+
+  .arrow .lab {
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    max-width: 34rem;
+  }
+
+  .chip {
+    background: var(--card);
+    border: 1px solid var(--node-rule);
+    border-radius: 999px;
+    padding: 0.35rem 0.85rem;
+    font-size: 0.88rem;
+    color: var(--ink-soft);
+  }
+
+  /* --- éventail vers trois colonnes --- */
+
+  .fan { position: relative; width: 100%; height: 2.4rem; }
+  .fan .up { position: absolute; left: 50%; top: 0; height: 1.2rem; border-left: 1px solid var(--line); }
+  .fan .bar { position: absolute; top: 1.2rem; left: 16.66%; right: 16.66%; border-top: 1px solid var(--line); }
+  .fan .st { position: absolute; top: 1.2rem; height: 1.2rem; border-left: 1px solid var(--line); }
+  .fan .st.a { left: 16.66%; }
+  .fan .st.b { left: 50%; }
+  .fan .st.c { left: 83.33%; }
+
+  .triple {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  .triple > div { display: grid; justify-items: center; align-content: start; }
+  .triple .node { max-width: 100%; width: 100%; }
+
+  /* --- schéma 3 : la recopie --- */
+
+  .copy-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 0.8fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  .copy-row .stack { display: grid; gap: 0.6rem; }
+  .copy-row .node { max-width: 100%; width: 100%; }
+  .copy-row .arrow { padding: 0; }
+
+  /* --- schéma 4 : cause → effet --- */
+
+  .cause-rows { display: grid; gap: 1.1rem; width: 100%; }
+
+  .cause-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .cause-row .node { max-width: 100%; width: 100%; }
+
+  .cause-row .link {
+    display: grid;
+    justify-items: center;
+    gap: 0.25rem;
+    text-align: center;
+  }
+
+  .cause-row .link .txt {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.35;
+  }
+
+  .cause-row .link .line {
+    width: 100%;
+    height: 1px;
+    background: var(--line);
+    position: relative;
+  }
+
+  .cause-row .link .line::after {
+    content: "";
+    position: absolute;
+    right: -1px;
+    top: -3.5px;
+    border-left: 7px solid var(--line);
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+  }
+
+  .loopback {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.88rem;
+    color: var(--muted);
+    border: 1px dashed var(--line);
+    border-radius: 999px;
+    padding: 0.35rem 0.9rem;
+    margin-top: 0.75rem;
+  }
+
+  @media (max-width: 46rem) {
+    .fan { display: none; }
+    .triple, .cause-row { grid-template-columns: minmax(0, 1fr); }
+    .copy-row { grid-template-columns: minmax(0, 1fr); }
+    .copy-row .arrow { transform: rotate(90deg); padding: 0.35rem 0; justify-self: center; }
+    .cause-row .link { padding: 0.4rem 0; }
+    .cause-row .link .line { width: 1px; height: 1.4rem; justify-self: center; }
+    .cause-row .link .line::after { right: -3.5px; top: auto; bottom: -1px; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 7px solid var(--line); border-bottom: 0; }
+    .triple > div + div { margin-top: 0.75rem; }
+  }
+
+  /* ============ blocs de texte ============ */
+
+  .breaks { width: min(var(--column), 100%); margin-top: 1.75rem; }
+
+  .break {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 1.1rem 1.3rem;
+  }
+
+  .break h4 {
+    font-family: var(--f-display);
+    font-weight: 600;
+    font-size: 1rem;
+    margin: 0 0 0.3rem;
+    color: var(--snag);
+    text-wrap: balance;
+  }
+
+  .break p { margin: 0; font-size: 0.95rem; color: var(--ink-soft); }
+
+  aside {
+    width: min(var(--column), 100%);
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+    background: var(--card);
+    padding: 1.3rem 1.5rem;
+    margin-top: 2rem;
+  }
+
+  aside h4 {
+    font-weight: 600;
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 0.55rem;
+  }
+
+  aside p { font-size: 0.96rem; color: var(--ink-soft); }
+
+  footer {
+    width: 100%;
+    border-top: 1px solid var(--rule);
+    margin-top: 4rem;
+    padding: 1.75rem 0 4rem;
+    display: grid;
+    justify-items: center;
+  }
+
+  footer p { width: min(var(--column), 100%); font-size: 0.88rem; color: var(--faint); margin: 0; }
+</style>
+
+<div class="shell">
+
+  <header class="top">
+    <div class="col">
+      <p class="kicker">Application Gestev</p>
+      <h1>La connexion, en clair</h1>
+      <p class="lede">
+        Comment un utilisateur s'identifie dans l'application aujourd'hui, pourquoi ce parcours
+        provoque des déconnexions, et à quoi il ressemblerait une fois simplifié. Cinq schémas.
+      </p>
+    </div>
+  </header>
+
+  <!-- ============ 1 ============ -->
+  <section>
+    <div class="col">
+      <h2>1 · Trois façons d'utiliser l'app</h2>
+      <p class="sub">L'application distingue trois profils, qui n'ont pas les mêmes droits.</p>
+    </div>
+
+    <figure>
+      <div class="plate-box">
+        <div class="plate-head"><span>Schéma 1</span><b>Les profils</b></div>
+        <div class="plate-body">
+          <div class="flow">
+            <div class="node start">Personne qui ouvre l'application</div>
+            <div class="fan" aria-hidden="true">
+              <span class="up"></span><span class="bar"></span>
+              <span class="st a"></span><span class="st b"></span><span class="st c"></span>
+            </div>
+            <div class="triple">
+              <div>
+                <div class="node">Visiteur<small>sans compte</small></div>
+                <div class="arrow" aria-hidden="true">↓</div>
+                <div class="node">Consulter le salon, les exposants, les vidéos et l'agenda</div>
+              </div>
+              <div>
+                <div class="node">Visiteur<small>avec compte</small></div>
+                <div class="arrow" aria-hidden="true">↓</div>
+                <div class="node">Consulter, et écrire dans les discussions</div>
+              </div>
+              <div>
+                <div class="node">Exposant</div>
+                <div class="arrow" aria-hidden="true">↓</div>
+                <div class="node">Consulter, publier vidéos et bons plans, gérer sa fiche exposant</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <figcaption>
+        Seuls les deux derniers profils ont besoin d'un identifiant et d'un mot de passe. Le premier
+        n'est pas vraiment un compte : c'est simplement quelqu'un qui n'est pas connecté.
+      </figcaption>
+    </figure>
+  </section>
+
+  <!-- ============ 2 ============ -->
+  <section>
+    <div class="col">
+      <h2>2 · Le parcours actuel</h2>
+      <p class="sub">Le profil est demandé au tout premier lancement, avant d'avoir montré quoi que ce soit.</p>
+    </div>
+
+    <figure>
+      <div class="plate-box">
+        <div class="plate-head"><span>Schéma 2</span><b>De l'installation à la connexion</b></div>
+        <div class="plate-body">
+          <div class="flow">
+            <div class="node start">Premier lancement</div>
+            <div class="arrow" aria-hidden="true">↓</div>
+            <div class="node">Écran de bienvenue</div>
+            <div class="arrow" aria-hidden="true">↓</div>
+            <div class="node ask">« Vous êtes ? »</div>
+            <div class="arrow" aria-hidden="true">↓</div>
+            <div class="chips">
+              <span class="chip">Visiteur sans compte</span>
+              <span class="chip">Visiteur avec compte</span>
+              <span class="chip">Exposant</span>
+            </div>
+            <div class="arrow" aria-hidden="true">↓</div>
+            <div class="node">L'application s'ouvre</div>
+            <div class="arrow" aria-hidden="true">↓</div>
+            <div class="node">Plus › Mon compte</div>
+            <div class="arrow" aria-hidden="true">↓</div>
+            <div class="node ask">Déjà connecté ?</div>
+            <div class="arrow labelled" aria-hidden="true"><span class="lab">non</span><span>↓</span></div>
+            <div class="node wide">Formulaire de connexion<small>celui du profil choisi au tout début, et lui seul</small></div>
+            <div class="arrow" aria-hidden="true">↓</div>
+            <div class="node good">Votre profil</div>
+          </div>
+        </div>
+      </div>
+      <figcaption>
+        La conséquence se lit en bas du schéma : le formulaire proposé dépend d'un choix fait à
+        l'installation. Un exposant qui a coché « visiteur » au premier lancement ne voit jamais le
+        formulaire dont il a besoin.
+      </figcaption>
+    </figure>
+  </section>
+
+  <!-- ============ 3 ============ -->
+  <section>
+    <div class="col">
+      <h2>3 · Ce que l'application retient</h2>
+      <p class="sub">C'est ici que se joue l'ensemble des problèmes de connexion.</p>
+      <p>
+        L'application garde deux espaces séparés — un pour le compte exposant, un pour le compte
+        visiteur — et <strong>recopie celui du profil actif</strong> dans un troisième espace, la
+        « fiche active ». C'est cette copie, et elle seule, que consultent tous les écrans.
+      </p>
+    </div>
+
+    <figure>
+      <div class="plate-box">
+        <div class="plate-head"><span>Schéma 3</span><b>La recopie</b></div>
+        <div class="plate-body">
+          <div class="flow">
+            <div class="copy-row">
+              <div class="stack">
+                <div class="node">Espace exposant<small>connexion + fiche</small></div>
+                <div class="node">Espace visiteur<small>connexion + fiche</small></div>
+              </div>
+              <div class="arrow" aria-hidden="true">→</div>
+              <div class="node ask">Recopie</div>
+              <div class="arrow" aria-hidden="true">→</div>
+              <div class="node good">Fiche active<small>la seule que l'app lit</small></div>
+            </div>
+
+            <div class="arrow" aria-hidden="true">↓</div>
+
+            <div class="chips">
+              <span class="chip">Mon compte</span>
+              <span class="chip">Onglet Plus</span>
+              <span class="chip">Discussions d'événement</span>
+              <span class="chip">Fiches exposants</span>
+              <span class="chip">Chaque échange avec le serveur</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <figcaption>
+        Chaque connexion, chaque déconnexion et chaque changement de profil refait cette recopie.
+        Tant qu'elle est exacte, tout va bien — et la plupart du temps elle l'est.
+      </figcaption>
+    </figure>
+  </section>
+
+  <!-- ============ 4 ============ -->
+  <section>
+    <div class="col">
+      <h2>4 · Les trois moments où la recopie se trompe</h2>
+      <p class="sub">Aucun n'est un cas rare : ce sont trois gestes normaux de l'utilisateur.</p>
+    </div>
+
+    <figure>
+      <div class="plate-box">
+        <div class="plate-head"><span>Schéma 4</span><b>Les points de rupture</b></div>
+        <div class="plate-body">
+          <div class="cause-rows">
+
+            <div class="cause-row">
+              <div class="node">Connexion par QR code</div>
+              <div class="link">
+                <span class="txt">la connexion n'est pas rangée au même endroit que les autres</span>
+                <span class="line" aria-hidden="true"></span>
+              </div>
+              <div class="node bad"><b>À la recopie suivante, la session est effacée</b></div>
+            </div>
+
+            <div class="cause-row">
+              <div class="node">Changement de profil</div>
+              <div class="link">
+                <span class="txt">l'app déconnecte avant de basculer</span>
+                <span class="line" aria-hidden="true"></span>
+              </div>
+              <div class="node bad"><b>Le compte qu'on quitte est perdu</b></div>
+            </div>
+
+            <div class="cause-row">
+              <div class="node">Session expirée côté serveur</div>
+              <div class="link">
+                <span class="txt">aucun écran n'est prévenu</span>
+                <span class="line" aria-hidden="true"></span>
+              </div>
+              <div class="node bad"><b>L'app croit encore que vous êtes connecté</b></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <figcaption>
+        S'y ajoute un quatrième cas, plus rare : les informations du visiteur et celles de l'exposant
+        sont rangées au même endroit, avec une étiquette à côté pour dire à qui elles appartiennent.
+        Si l'étiquette et le contenu se désaccordent, c'est le mauvais profil qui s'affiche.
+      </figcaption>
+    </figure>
+
+    <div class="breaks">
+      <div class="break">
+        <h4>Ce que l'utilisateur en dit</h4>
+        <p>
+          « J'étais connecté hier, ce matin non. » « J'ai voulu regarder l'autre compte, j'ai perdu
+          le mien. » « Le bouton ne marche pas » — alors que la session avait expiré sans le dire.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 5 ============ -->
+  <section>
+    <div class="col">
+      <h2>5 · Le parcours simplifié</h2>
+      <p class="sub">Une seule connexion à la fois, rangée à un seul endroit. Plus de recopie, donc plus de recopie fausse.</p>
+    </div>
+
+    <figure>
+      <div class="plate-box">
+        <div class="plate-head"><span>Schéma 5</span><b>Ce qu'on propose</b></div>
+        <div class="plate-body">
+          <div class="flow">
+            <div class="node start">Lancement</div>
+            <div class="arrow" aria-hidden="true">↓</div>
+            <div class="node wide">L'application s'ouvre directement sur le salon</div>
+            <div class="arrow" aria-hidden="true">↓</div>
+            <div class="node">Consultation libre</div>
+            <div class="arrow" aria-hidden="true">↓</div>
+            <div class="node ask">Une action demande un compte ?</div>
+            <div class="arrow labelled" aria-hidden="true"><span class="lab">oui</span><span>↓</span></div>
+            <div class="node wide">Un seul écran de connexion<small>Exposant ou Visiteur, au choix sur place</small></div>
+            <div class="arrow" aria-hidden="true">↓</div>
+            <div class="node good">Connecté</div>
+            <div class="arrow" aria-hidden="true">↓</div>
+            <div class="node">Déconnexion, ou session expirée</div>
+            <div class="loopback"><span aria-hidden="true">↩</span> retour à la consultation libre, sans rien perdre</div>
+          </div>
+        </div>
+      </div>
+      <figcaption>
+        La question « vous êtes ? » disparaît du démarrage et rejoint l'écran de connexion, au moment
+        où elle a un sens. L'utilisateur n'a plus rien à déclarer avant d'avoir vu l'application.
+      </figcaption>
+    </figure>
+
+    <aside>
+      <h4>En une phrase</h4>
+      <p>
+        Aujourd'hui l'application demande <em>qui vous êtes</em> puis se débrouille avec la réponse ;
+        demain elle demande <em>de vous connecter</em> quand c'est nécessaire, et le profil vient
+        avec la connexion. C'est tout le changement, et il supprime les quatre problèmes ci-dessus.
+      </p>
+    </aside>
+  </section>
+
+  <footer>
+    <p>Note préparée à partir d'une relecture du code de connexion de l'application. Une version technique détaillée existe en parallèle.</p>
+  </footer>
+
+</div>
+
+</body></html>
