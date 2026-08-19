@@ -58,6 +58,11 @@ app.get('/manage', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/manage/index.html'))
 })
 
+// Note d'explication du parcours d'authentification (page autonome)
+app.get('/auth-doc', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/AuthGestev.html'))
+})
+
 // Route d'accueil
 app.get('/', (req, res) => {
     res.json({
