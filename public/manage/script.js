@@ -2631,27 +2631,41 @@ const NOTIF_TEMPLATES = {
     update: {
         title: '🚀 Mise à jour disponible',
         body: 'Une nouvelle version de l\'application est disponible. Mettez à jour pour profiter des dernières améliorations !',
-        category: 'appUpdates',
-        data: { action: 'app_update' }
+        category: 'appUpdates'
     },
     salon: {
         title: '🏛️ Nouveau salon actif',
         body: 'Un nouveau salon vient d\'être activé. Découvrez les exposants et événements disponibles !',
-        category: 'salonChanges',
-        data: { action: 'switch_salon' }
+        category: 'salonChanges'
     },
     event: {
         title: '📅 Nouvel événement',
         body: 'Un nouvel événement vient d\'être publié. Consultez le programme pour ne rien manquer !',
-        category: 'events',
-        data: { action: 'new_event' }
+        category: 'events'
     },
     custom: {
         title: '',
         body: '',
-        category: 'appUpdates',
-        data: {}
+        category: 'appUpdates'
     }
+};
+
+/**
+ * Action portée par la notification, lue par l'app mobile.
+ *
+ * Elle découle de la CATÉGORIE et non du modèle : l'opérateur peut changer la
+ * catégorie après avoir cliqué un modèle, et c'est la catégorie qui décide à
+ * la fois qui reçoit (filtre serveur) et ce que l'app fait à l'ouverture.
+ *
+ * Côté app : `switch_salon` déclenche le modal de bascule de salon,
+ * `app_update` et `new_event` sont consommés comme de simples annonces.
+ * Ce `data` n'était jusqu'ici jamais transmis — le modèle « Nouveau salon »
+ * arrivait donc sur les devices sans action, et le modal ne s'ouvrait pas.
+ */
+const NOTIF_CATEGORY_ACTIONS = {
+    appUpdates: 'app_update',
+    salonChanges: 'switch_salon',
+    events: 'new_event'
 };
 
 async function loadNotificationStats() {
@@ -2671,21 +2685,33 @@ async function loadNotificationStats() {
 }
 
 function openNotificationModal(template = null) {
-    // Remplir le select salons
+    // Audience (qui reçoit) et destination (vers quel salon basculer) sont
+    // deux listes distinctes alimentées par les mêmes salons.
     const notifSalonSelect = document.getElementById('notifSalon');
-    notifSalonSelect.innerHTML = '<option value="">Tous les salons</option>';
+    notifSalonSelect.innerHTML = '<option value="">Tous les devices</option>';
+
+    const notifTargetSelect = document.getElementById('notifTargetSalon');
+    notifTargetSelect.innerHTML = '<option value="">Sélectionner le salon…</option>';
+
     salons.forEach(s => {
         const opt = document.createElement('option');
         opt.value = s._id;
         opt.textContent = s.nom;
         notifSalonSelect.appendChild(opt);
+
+        const targetOpt = opt.cloneNode(true);
+        notifTargetSelect.appendChild(targetOpt);
     });
 
-    // Compteur body
+    // Compteur body. Le listener n'est posé qu'une fois : il était rattaché à
+    // chaque ouverture du modal, donc autant de fois que de clics.
     const bodyArea = document.getElementById('notifBody');
-    bodyArea.addEventListener('input', () => {
-        document.getElementById('notifBodyCount').textContent = bodyArea.value.length;
-    });
+    if (!bodyArea.dataset.counterBound) {
+        bodyArea.addEventListener('input', () => {
+            document.getElementById('notifBodyCount').textContent = bodyArea.value.length;
+        });
+        bodyArea.dataset.counterBound = '1';
+    }
 
     // Appliquer le template si fourni
     if (template) {
@@ -2714,6 +2740,7 @@ function applyNotifTemplate(key) {
     document.getElementById('notifBody').value = tpl.body;
     document.getElementById('notifBodyCount').textContent = tpl.body.length;
     document.getElementById('notifCategory').value = tpl.category;
+    onNotifCategoryChange();
 
     // Highlight le bouton actif
     document.querySelectorAll('.notif-tpl-btn').forEach(btn => {
@@ -2732,11 +2759,21 @@ function applyNotifTemplate(key) {
     }
 }
 
-async function sendNotification() {
-    const title    = document.getElementById('notifTitle').value.trim();
-    const body     = document.getElementById('notifBody').value.trim();
+/**
+ * Le salon de destination n'a de sens que pour une bascule de salon.
+ */
+function onNotifCategoryChange() {
     const category = document.getElementById('notifCategory').value;
-    const salon    = document.getElementById('notifSalon').value || null;
+    const block = document.getElementById('notifTargetSalonBlock');
+    block.classList.toggle('hidden', category !== 'salonChanges');
+}
+
+async function sendNotification() {
+    const title       = document.getElementById('notifTitle').value.trim();
+    const body        = document.getElementById('notifBody').value.trim();
+    const category    = document.getElementById('notifCategory').value;
+    const salon       = document.getElementById('notifSalon').value || null;
+    const targetSalon = document.getElementById('notifTargetSalon').value || null;
 
     const result = document.getElementById('notifResult');
     const sendBtn  = document.getElementById('notifSendBtn');
@@ -2748,6 +2785,14 @@ async function sendNotification() {
         return;
     }
 
+    // Sans destination, une notification de bascule arrive sur le téléphone
+    // sans savoir vers quel salon aller : le modal ne s'ouvrirait pas.
+    if (category === 'salonChanges' && !targetSalon) {
+        result.className = 'rounded-lg p-4 text-sm font-medium bg-red-50 text-red-700 border border-red-200';
+        result.textContent = 'Choisissez le salon à proposer : c\'est lui que l\'application ouvrira.';
+        return;
+    }
+
     // État chargement
     sendBtn.disabled = true;
     sendLabel.textContent = 'Envoi en cours...';
@@ -2755,7 +2800,16 @@ async function sendNotification() {
     result.className = 'hidden';
 
     try {
-        const payload = { title, body, category };
+        // `data` porte l'action lue par l'app à l'ouverture de la notification.
+        const data = { action: NOTIF_CATEGORY_ACTIONS[category] || 'app_update' };
+
+        if (category === 'salonChanges' && targetSalon) {
+            const target = salons.find(s => s._id === targetSalon);
+            data.salonId = targetSalon;
+            if (target) data.salonName = target.nom;
+        }
+
+        const payload = { title, body, category, data };
         if (salon) payload.salon = salon;
 
         const res = await apiRequest(`${API_BASE}/notifications/send-to-all`, {

@@ -111,9 +111,6 @@ app.get('/ping', (req, res) => {
     })
 })
 
-// Middleware global pour la gestion des erreurs (doit être après toutes les routes)
-app.use(errorHandler)
-
 // Gestion des routes non trouvées
 app.use('*', (req, res) => {
     res.status(404).json({
@@ -122,6 +119,11 @@ app.use('*', (req, res) => {
         path: req.originalUrl
     })
 })
+
+// Middleware global pour la gestion des erreurs. Il doit être déclaré en
+// dernier : placé avant le catch-all 404, une erreur levée par ce dernier
+// n'aurait aucun gestionnaire pour la rattraper.
+app.use(errorHandler)
 
 // Démarrer le serveur
 app.listen(PORT, () => {

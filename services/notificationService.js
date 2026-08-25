@@ -52,7 +52,15 @@ const notifyAllUsers = async (title, body, data = {}, salonId = null, category =
             return []
         }
 
-        // Préparer les messages
+        /**
+         * Préparer les messages.
+         *
+         * `data.salonId` n'est PAS écrasé quand l'appelant en fournit un : le
+         * salon d'audience (`salonId`) sert à choisir QUI reçoit, alors qu'un
+         * `data.salonId` désigne le salon vers lequel l'app doit basculer. Les
+         * confondre rendait le modèle « Nouveau salon actif » inopérant : le
+         * device recevait l'identifiant du salon où il était déjà.
+         */
         const messages = filteredUsers.map(user => ({
             to: user.notificationToken,
             sound: 'default',
@@ -61,7 +69,7 @@ const notifyAllUsers = async (title, body, data = {}, salonId = null, category =
             data: {
                 ...data,
                 category,
-                salonId: salonId || user.salon?.toString()
+                salonId: data.salonId || salonId || user.salon?.toString()
             }
         }))
 
@@ -142,7 +150,8 @@ const notifyUser = async (userId, title, body, data = {}, category = 'appUpdates
             data: {
                 ...data,
                 category,
-                salonId: user.salon?.toString()
+                // Voir notifyAllUsers : un salonId explicite est une destination.
+                salonId: data.salonId || user.salon?.toString()
             }
         }
 

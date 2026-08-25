@@ -25,6 +25,17 @@ const { getPublicFeatures } = require('../controllers/featureController')
 const { getPublicSettings } = require('../controllers/settingController')
 const { requireAdmin, requireExposant } = require('../middlewares/auth')
 const { filterBySalon } = require('../middlewares/salon')
+const rateLimit = require('../middlewares/rateLimit')
+
+// Le fil de discussion est ouvert à tous les comptes connectés : on plafonne
+// le débit d'envoi pour qu'un client ne puisse pas noyer un événement.
+// Appliqué après `requireExposant`, la clé est donc l'utilisateur, pas l'IP
+// (tout le salon partage le même wifi).
+const messageRateLimit = rateLimit({
+    windowMs: 60 * 1000,
+    max: 15,
+    message: 'Vous envoyez des messages trop rapidement, patientez quelques secondes'
+})
 
 // Route publique
 router.get('/version', getVersion)
@@ -56,7 +67,7 @@ router.delete('/rdv/:id', requireExposant, deleteRdv)
 // Route publique pour lire les messages
 router.get('/event-messages/:eventId', getEventMessages)
 // Routes protégées pour créer, modifier et supprimer les messages (exposant uniquement)
-router.post('/event-messages', requireExposant, createEventMessage)
+router.post('/event-messages', requireExposant, messageRateLimit, createEventMessage)
 router.put('/event-messages/:id', requireExposant, updateEventMessage)
 router.delete('/event-messages/:id', requireExposant, deleteEventMessage)
 

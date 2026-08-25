@@ -2,6 +2,13 @@ const jwt = require('jsonwebtoken')
 const Exposant = require('../models/Exposant')
 const Invite = require('../models/Invite')
 
+// Le succès d'authentification était journalisé 2 fois par requête, sur un
+// middleware traversé par tous les appels authentifiés. On garde les logs en
+// développement, où ils servent au débogage, et on ne conserve que les échecs
+// en production.
+const AUTH_DEBUG = process.env.NODE_ENV !== 'production'
+const authLog = (...args) => { if (AUTH_DEBUG) console.log(...args) }
+
 /**
  * Middleware pour vérifier l'authentification JWT
  * Supporte aussi l'ancien système de token pour faciliter la migration
@@ -34,7 +41,7 @@ const requireAuth = async (req, res, next) => {
                 req.exposant = exposant
                 req.userType = 'exposant'
                 
-                console.log('🔐 [Auth] Exposant trouvé:', {
+                authLog('🔐 [Auth] Exposant trouvé:', {
                     exposantId: req.exposantId,
                     hasExposant: !!req.exposant,
                     exposantStatut: req.exposant?.statut,
@@ -62,7 +69,7 @@ const requireAuth = async (req, res, next) => {
                     })
                 }
 
-                console.log('✅ [Auth] Authentification Exposant réussie:', {
+                authLog('✅ [Auth] Authentification Exposant réussie:', {
                     exposantId: req.exposantId,
                     salon: req.exposant.salon?.toString(),
                     isValid: req.exposant.isValid
@@ -78,7 +85,7 @@ const requireAuth = async (req, res, next) => {
                     req.invite = invite
                     req.userType = 'invite'
                     
-                    console.log('🔐 [Auth] Invité trouvé:', {
+                    authLog('🔐 [Auth] Invité trouvé:', {
                         inviteId: req.inviteId,
                         hasInvite: !!req.invite,
                         inviteStatut: req.invite?.statut,
@@ -93,7 +100,7 @@ const requireAuth = async (req, res, next) => {
                         })
                     }
 
-                    console.log('✅ [Auth] Authentification Invité réussie:', {
+                    authLog('✅ [Auth] Authentification Invité réussie:', {
                         inviteId: req.inviteId
                     })
 
@@ -133,8 +140,11 @@ const requireAdmin = async (req, res, next) => {
     try {
         // D'abord vérifier l'authentification
         await requireAuth(req, res, () => {
-            // Vérifier que l'utilisateur est administrateur
-            if (req.exposant.isValid !== 3) {
+            // Vérifier que l'utilisateur est administrateur.
+            // `req.exposant` est absent pour un invité : sans cette garde,
+            // l'accès d'un invité à une route admin levait un TypeError
+            // rattrapé plus haut, et renvoyait 500 au lieu de 403.
+            if (!req.exposant || req.exposant.isValid !== 3) {
                 return res.status(403).json({
                     success: false,
                     message: 'Accès refusé. Droits d\'administrateur requis.'

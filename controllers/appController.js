@@ -1,5 +1,7 @@
+const mongoose = require('mongoose')
 const Categorie = require('../models/Categorie')
 const Event = require('../models/Event')
+const EventMessage = require('../models/EventMessage')
 const Exposant = require('../models/Exposant')
 const ExposantVideo = require('../models/ExposantVideo')
 const ExposantBondeal = require('../models/ExposantBondeal')
@@ -141,14 +143,69 @@ const createCategory = async (req, res) => {
 }
 
 /**
+ * Champs d'un événement exposés à l'application.
+ */
+const EVENT_PUBLIC_FIELDS = 'titre description fullEventDate eventDate createdAt'
+
+/**
+ * Réponse d'erreur. Le détail technique n'est renvoyé qu'hors production.
+ */
+const failEvent = (res, status, message, error) => {
+    return res.status(status).json({
+        success: false,
+        message,
+        ...(error && process.env.NODE_ENV !== 'production' ? { error: error.message } : {})
+    })
+}
+
+/**
+ * Fuseau de référence du salon. `toISOString()` renvoie une date UTC : un
+ * événement du 13 septembre à 00h30 à Paris (soit 22h30 UTC le 12) se voyait
+ * attribuer le 12 septembre comme jour. On formate donc explicitement dans le
+ * fuseau du salon. Le locale `sv-SE` produit nativement du YYYY-MM-DD.
+ */
+const SALON_TIMEZONE = process.env.SALON_TIMEZONE || 'Europe/Paris'
+
+const dayFormatter = new Intl.DateTimeFormat('sv-SE', {
+    timeZone: SALON_TIMEZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+})
+
+const toLocalDayString = (date) => dayFormatter.format(date)
+
+/**
  * Récupérer tous les événements (indépendants des salons)
  * GET /api/v2/app/events
+ * @param {string} [req.query.eventDate] - Filtre sur un jour précis (YYYY-MM-DD)
+ * @param {string} [req.query.from] - Ne renvoie que les événements à partir de cette date (ISO)
  */
 const getAllEvents = async (req, res) => {
     try {
-        const events = await Event.find({ statut: 1 })
+        const filter = { statut: 1 }
+
+        // Filtre par jour : documenté côté app depuis le départ mais jamais
+        // implémenté ici, ce qui obligeait le client à tout télécharger.
+        const { eventDate, from } = req.query
+
+        if (eventDate) {
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(eventDate)) {
+                return failEvent(res, 400, 'Format de date invalide (format requis: YYYY-MM-DD)')
+            }
+            filter.eventDate = eventDate
+        } else if (from) {
+            const fromDate = new Date(from)
+            if (Number.isNaN(fromDate.getTime())) {
+                return failEvent(res, 400, 'Paramètre `from` invalide (date ISO attendue)')
+            }
+            filter.fullEventDate = { $gte: fromDate }
+        }
+
+        const events = await Event.find(filter)
             .sort({ fullEventDate: -1 })
-            .select('titre description fullEventDate eventDate createdAt')
+            .select(EVENT_PUBLIC_FIELDS)
+            .lean()
 
         res.json({
             success: true,
@@ -157,11 +214,7 @@ const getAllEvents = async (req, res) => {
         })
     } catch (error) {
         console.error('Error getting events:', error)
-        res.status(500).json({
-            success: false,
-            message: 'Erreur lors de la récupération des événements',
-            error: error.message
-        })
+        failEvent(res, 500, 'Erreur lors de la récupération des événements', error)
     }
 }
 
@@ -173,27 +226,18 @@ const getEventById = async (req, res) => {
     try {
         const { id } = req.params
 
-        if (!id) {
-            return res.status(400).json({
-                success: false,
-                message: 'Event ID requis'
-            })
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return failEvent(res, 400, "ID d'événement invalide")
         }
 
-        const event = await Event.findById(id).select('titre description fullEventDate eventDate statut createdAt')
+        // Le statut fait partie du filtre : un événement désactivé est traité
+        // comme inexistant, sans exposer son existence au client.
+        const event = await Event.findOne({ _id: id, statut: 1 })
+            .select(EVENT_PUBLIC_FIELDS)
+            .lean()
 
         if (!event) {
-            return res.status(404).json({
-                success: false,
-                message: 'Événement non trouvé'
-            })
-        }
-
-        if (event.statut !== 1) {
-            return res.status(404).json({
-                success: false,
-                message: 'Événement non trouvé'
-            })
+            return failEvent(res, 404, 'Événement non trouvé')
         }
 
         res.json({
@@ -202,18 +246,7 @@ const getEventById = async (req, res) => {
         })
     } catch (error) {
         console.error('Error getting event by ID:', error)
-        if (error.name === 'CastError') {
-            return res.status(400).json({
-                success: false,
-                message: 'ID d\'événement invalide',
-                error: error.message
-            })
-        }
-        res.status(500).json({
-            success: false,
-            message: 'Erreur lors de la récupération de l\'événement',
-            error: error.message
-        })
+        failEvent(res, 500, "Erreur lors de la récupération de l'événement", error)
     }
 }
 
@@ -228,31 +261,19 @@ const createEvent = async (req, res) => {
 
         // Validation
         if (!titre || !description) {
-            return res.status(400).json({
-                success: false,
-                message: 'Tous les champs sont requis (titre, description)'
-            })
+            return failEvent(res, 400, 'Tous les champs sont requis (titre, description)')
         }
 
         if (eventDate && !/^\d{4}-\d{2}-\d{2}$/.test(eventDate)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Format de date invalide (format requis: YYYY-MM-DD)'
-            })
+            return failEvent(res, 400, 'Format de date invalide (format requis: YYYY-MM-DD)')
         }
 
         if (titre.length > 100) {
-            return res.status(400).json({
-                success: false,
-                message: 'Le titre ne doit pas dépasser 100 caractères'
-            })
+            return failEvent(res, 400, 'Le titre ne doit pas dépasser 100 caractères')
         }
 
         if (description.length > 500) {
-            return res.status(400).json({
-                success: false,
-                message: 'La description ne doit pas dépasser 500 caractères'
-            })
+            return failEvent(res, 400, 'La description ne doit pas dépasser 500 caractères')
         }
 
         // Convertir la date en objet Date
@@ -262,21 +283,15 @@ const createEvent = async (req, res) => {
         } else if (eventDate) {
             eventDateObj = new Date(eventDate)
         } else {
-            return res.status(400).json({
-                success: false,
-                message: 'Une date est requise (eventDate ou fullEventDate)'
-            })
+            return failEvent(res, 400, 'Une date est requise (eventDate ou fullEventDate)')
         }
 
         if (isNaN(eventDateObj.getTime())) {
-            return res.status(400).json({
-                success: false,
-                message: 'Date invalide'
-            })
+            return failEvent(res, 400, 'Date invalide')
         }
 
         const event = await Event.create({
-            eventDate: eventDate || eventDateObj.toISOString().split('T')[0],
+            eventDate: eventDate || toLocalDayString(eventDateObj),
             fullEventDate: eventDateObj,
             titre,
             description,
@@ -290,11 +305,7 @@ const createEvent = async (req, res) => {
         })
     } catch (error) {
         console.error('Error creating event:', error)
-        res.status(500).json({
-            success: false,
-            message: 'Erreur lors de la création de l\'événement',
-            error: error.message
-        })
+        failEvent(res, 500, "Erreur lors de la création de l'événement", error)
     }
 }
 
@@ -308,42 +319,27 @@ const updateEvent = async (req, res) => {
         const { id } = req.params
         const { eventDate, titre, description, fullEventDate, statut } = req.body
 
-        if (!id) {
-            return res.status(400).json({
-                success: false,
-                message: 'Event ID requis'
-            })
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return failEvent(res, 400, "ID d'événement invalide")
         }
 
         const event = await Event.findById(id)
 
         if (!event) {
-            return res.status(404).json({
-                success: false,
-                message: 'Événement non trouvé'
-            })
+            return failEvent(res, 404, 'Événement non trouvé')
         }
 
         // Validation
         if (titre && titre.length > 100) {
-            return res.status(400).json({
-                success: false,
-                message: 'Le titre ne doit pas dépasser 100 caractères'
-            })
+            return failEvent(res, 400, 'Le titre ne doit pas dépasser 100 caractères')
         }
 
         if (description && description.length > 500) {
-            return res.status(400).json({
-                success: false,
-                message: 'La description ne doit pas dépasser 500 caractères'
-            })
+            return failEvent(res, 400, 'La description ne doit pas dépasser 500 caractères')
         }
 
         if (eventDate && !/^\d{4}-\d{2}-\d{2}$/.test(eventDate)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Format de date invalide (format requis: YYYY-MM-DD)'
-            })
+            return failEvent(res, 400, 'Format de date invalide (format requis: YYYY-MM-DD)')
         }
 
         // Mise à jour des champs
@@ -355,20 +351,14 @@ const updateEvent = async (req, res) => {
         if (fullEventDate) {
             const dateObj = new Date(fullEventDate)
             if (isNaN(dateObj.getTime())) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Date invalide'
-                })
+                return failEvent(res, 400, 'Date invalide')
             }
             event.fullEventDate = dateObj
-            event.eventDate = dateObj.toISOString().split('T')[0]
+            event.eventDate = toLocalDayString(dateObj)
         } else if (eventDate) {
             const dateObj = new Date(eventDate)
             if (isNaN(dateObj.getTime())) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Date invalide'
-                })
+                return failEvent(res, 400, 'Date invalide')
             }
             event.eventDate = eventDate
             event.fullEventDate = dateObj
@@ -383,18 +373,7 @@ const updateEvent = async (req, res) => {
         })
     } catch (error) {
         console.error('Error updating event:', error)
-        if (error.name === 'CastError') {
-            return res.status(400).json({
-                success: false,
-                message: 'ID d\'événement invalide',
-                error: error.message
-            })
-        }
-        res.status(500).json({
-            success: false,
-            message: 'Erreur lors de la mise à jour de l\'événement',
-            error: error.message
-        })
+        failEvent(res, 500, "Erreur lors de la mise à jour de l'événement", error)
     }
 }
 
@@ -402,47 +381,34 @@ const updateEvent = async (req, res) => {
  * Supprimer un événement
  * DELETE /api/v2/app/events/:id
  * Requiert authentification admin
+ *
+ * Les messages du fil de discussion sont supprimés avec l'événement : sans
+ * cela ils restaient en base indéfiniment, rattachés à un événement disparu.
  */
 const deleteEvent = async (req, res) => {
     try {
         const { id } = req.params
 
-        if (!id) {
-            return res.status(400).json({
-                success: false,
-                message: 'Event ID requis'
-            })
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return failEvent(res, 400, "ID d'événement invalide")
         }
 
-        const event = await Event.findById(id)
+        const event = await Event.findByIdAndDelete(id)
 
         if (!event) {
-            return res.status(404).json({
-                success: false,
-                message: 'Événement non trouvé'
-            })
+            return failEvent(res, 404, 'Événement non trouvé')
         }
 
-        await Event.findByIdAndDelete(id)
+        const { deletedCount } = await EventMessage.deleteMany({ eventId: id })
 
         res.json({
             success: true,
-            message: 'Événement supprimé avec succès'
+            message: 'Événement supprimé avec succès',
+            data: { deletedMessages: deletedCount }
         })
     } catch (error) {
         console.error('Error deleting event:', error)
-        if (error.name === 'CastError') {
-            return res.status(400).json({
-                success: false,
-                message: 'ID d\'événement invalide',
-                error: error.message
-            })
-        }
-        res.status(500).json({
-            success: false,
-            message: 'Erreur lors de la suppression de l\'événement',
-            error: error.message
-        })
+        failEvent(res, 500, "Erreur lors de la suppression de l'événement", error)
     }
 }
 

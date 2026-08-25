@@ -1,29 +1,21 @@
 const mongoose = require('mongoose')
-const autopopulate = require('mongoose-autopopulate')
 const Schema = mongoose.Schema
 
 const eventMessageSchema = new mongoose.Schema({
     eventId: {
         type: Schema.Types.ObjectId,
         ref: 'Event',
-        required: true,
-        index: true
+        required: true
     },
     exposantId: {
         type: Schema.Types.ObjectId,
         ref: 'Exposant',
-        required: false, // Rendu optionnel pour permettre les invités
-        autopopulate: {
-            select: 'nom profilePic email'
-        }
+        required: false // Rendu optionnel pour permettre les invités
     },
     inviteId: {
         type: Schema.Types.ObjectId,
         ref: 'Invite',
-        required: false, // Optionnel pour permettre les exposants
-        autopopulate: {
-            select: 'nom email'
-        }
+        required: false // Optionnel pour permettre les exposants
     },
     content: {
         type: String,
@@ -41,11 +33,13 @@ const eventMessageSchema = new mongoose.Schema({
     timestamps: true
 })
 
-eventMessageSchema.plugin(autopopulate)
-
-// Index pour améliorer les performances
-eventMessageSchema.index({ eventId: 1, createdAt: -1 })
-eventMessageSchema.index({ eventId: 1, statut: 1 })
+// Index principal : couvre la lecture du fil (filtre eventId + statut, tri
+// createdAt décroissant) ainsi que le polling delta (createdAt > since) et la
+// pagination par curseur (createdAt < before). Un seul index composé suffit,
+// Mongo peut l'utiliser en préfixe pour les requêtes sur eventId seul.
+eventMessageSchema.index({ eventId: 1, statut: 1, createdAt: -1 })
+// Utilisés pour retrouver les messages d'un auteur (modération, suppression
+// de compte).
 eventMessageSchema.index({ exposantId: 1 })
 eventMessageSchema.index({ inviteId: 1 })
 
@@ -61,4 +55,3 @@ eventMessageSchema.pre('validate', function(next) {
 const EventMessage = mongoose.model('EventMessage', eventMessageSchema)
 
 module.exports = EventMessage
-

@@ -33,9 +33,9 @@ const eventSchema = new mongoose.Schema({
     timestamps: true
 })
 
-// Index pour améliorer les performances
-eventSchema.index({ fullEventDate: -1 })
-eventSchema.index({ statut: 1 })
+// Index composé : la lecture publique filtre sur statut et trie sur
+// fullEventDate. Le préfixe { statut: 1 } couvre aussi les comptages admin.
+eventSchema.index({ statut: 1, fullEventDate: -1 })
 
 const Event = mongoose.model('Event', eventSchema)
 
